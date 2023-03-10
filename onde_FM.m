@@ -19,6 +19,26 @@ Tsm=1/Fm;
 
 s=Ap*cos(2*pi*Fp*t+beta.*sin(2*pi*Fm*t));
 
+%% Calcul du périodogramme
+
+[Perio,f] = periodogram(s,'centered');
+
+figure,
+plot(f,Perio);
+xlabel('Fréquence (Hz)');
+ylabel('Densité spectrale de puissance');
+grid on;
+title('Periodogramme du signal');
+
+%% Calcul de la transformée de Fourrier
+
+TF=fft(s);
+
+figure,
+plot(real(TF));
+grid on;
+title("Transformée de Fourier du signal");
+
 %% Affichage
 
 figure,

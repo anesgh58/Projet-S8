@@ -13,12 +13,31 @@ N=10000;
 Fs=Fp*2^OSR;
 Ts=1/Fs;
 t= (0:N-1)*Ts;
-%p=AP*cos(2*pi*Fp*t);    %Porteuse
 Tsm=1/Fm;
 beta=(kf*Am)/Fm;
 
 % Calcul de la modulation de phase PM
 s = Ap.*cos(2*pi*Fp*t + beta*sin(2*pi*Fm*t));
+
+%% Calcul du périodogramme
+
+[Perio,f] = periodogram(s,'centered');
+
+figure,
+plot(f,Perio);
+xlabel('Fréquence (Hz)');
+ylabel('Densité spectrale de puissance');
+grid on;
+title('Periodogramme du signal');
+
+%% Calcul de la transformée de Fourrier
+
+TF=fft(s);
+
+figure,
+plot(real(TF));
+grid on;
+title("Transformée de Fourier du signal");
 
 %% Affichage
 
