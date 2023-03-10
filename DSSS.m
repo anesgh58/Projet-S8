@@ -1,4 +1,4 @@
-function [s] = DSSS(N,B,fe,roll_off)
+function [s,ss,ss_spread] = DSSS(N,B,fe,roll_off)
 
 %% Parametres
 nb = 1;                                                       % Nombre de bit/symbole (BPSK)
