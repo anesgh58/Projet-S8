@@ -1,44 +1,45 @@
-function [s] = onde_PM(m,AP,Fp,AM,Fm,k,OSR,Fmax)
-% 
-% %m: Modulant
-% %AP: Amplitude porteuse
-% %Fp: Fréquence porteuse
-% %AM: Amplitude modulant
-% %FM: Fréquence modulant
-% %k: Indice de modulation
-% %OSR: Ratio de dépassement
-% 
+function [s] = onde_PM(m,Fm,Am,p,Ap,Fp,OSR,kf)
 
-
-
-% % Définition des paramètres de modulation PM
-% fc = 100; % fréquence de la porteuse
-% fm = 10; % fréquence du signal modulant
-kf = 10; % sensibilité de la fréquence de modulation
-% A = 1; % amplitude de la porteuse
-indm = 0.5; % indice de modulation
-% 
-% % Création des signaux porteur et modulant
-% t = linspace(0, 1, 1000); % vecteur temps
-% carrier = A * cos(2*pi*fc*t); % signal porteur
-% modulating = m * sin(2*pi*fm*t); % signal modulant
+%m: Modulant
+%Ap: Amplitude porteuse
+%Fp: Fréquence porteuse
+%Am: Amplitude modulant
+%Fm: Fréquence modulant
+%k: Indice de modulation
+%OSR: Ratio de dépassement
+%kf
 
 N=10000;
-Fs=Fmax*2^OSR;
+Fs=Fp*2^OSR;
 Ts=1/Fs;
 t= (0:N-1)*Ts;
-p=AP*cos(2*pi*Fp*t);    %Porteuse
+%p=AP*cos(2*pi*Fp*t);    %Porteuse
 Tsm=1/Fm;
+beta=(kf*Am)/Fm;
 
 % Calcul de la modulation de phase PM
-s = p.*cos(2*pi*(Fp + kf*indm)*t);
+s = Ap.*cos(2*pi*Fp*t + beta*sin(2*pi*Fm*t));
 
-%s=AP*cos(2*pi*Fp*t+deltaPhi)
+%% Affichage
 
-figure 
+figure,
+subplot(3,1,1);
+plot(t,p);
+xlabel('Temps');
+xlim([0 3*Tsm]);
+title('Représentation de la porteuse');
+grid on;
+
+subplot(3,1,2);
+plot(t,m);
+xlabel('Temps');
+xlim([0 3*Tsm]);
+title('Représentation du modulant');
+grid on;
+
+subplot(3,1,3);
 plot(t,s);
 xlim([0 3*Tsm]);
 xlabel('Temps');
-title('Représentation Signal Modulé en phase')
-grid on
-
+title('Représentation du signal modulé en phase')
+grid on;
