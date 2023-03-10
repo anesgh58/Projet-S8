@@ -1,20 +1,19 @@
-function [s] = onde_AM(m,k,AP,Fp,OSR,Fmax,type,FM)
+function [s] = onde_AM(m,Fm,k,p,Ap,Fp,OSR,type)
 
 %m: Modulant
 %k: Taux de modulation, utile que pour DBAP
-%AP: Amplitude porteuse
+%Ap: Amplitude porteuse
 %Fp: Fréquence porteuse
 %OSR: Ratio de dépassement
 %Fmax: Fréquence maximum
 %type: DBSP, DBAP et BLU
-%FM: Fréquence modulant
+%Fm: Fréquence modulant
 
 N=10000;
-Fs=Fmax*2^OSR;
+Fs=Fp*2^OSR;
 Ts=1/Fs;
-t= (1:N)*Ts;
-p=AP*cos(2*pi*Fp*t);    %Porteuse
-Tsm=1/FM;
+t= (0:N-1)*Ts;
+Tsm=1/Fm;
 if strcmp(type,"DBSP")
     s=p.*m;
 end
@@ -27,9 +26,47 @@ if strcmp(type,'BLU')
     s= m.*cos(2*pi*Fp*t) + m.*sin(2*pi*Fp*t);
 end
 
-figure 
+%% Calcul du périodogramme
+
+[Perio,f] = periodogram(s,'centered');
+
+figure,
+plot(f,Perio);
+xlabel('Fréquence (Hz)');
+ylabel('Densité spectrale de puissance');
+grid on;
+title('Periodogramme du signal');
+
+%% Calcul de la transformée de Fourrier
+
+TF=fft(s);
+
+figure,
+plot(real(TF));
+grid on;
+title("Transformée de Fourier du signal");
+
+
+%% Affichage
+
+figure,
+subplot(3,1,1);
+plot(t,p);
+xlabel('Temps');
+xlim([0 3*Tsm]);
+title('Représentation de la porteuse');
+grid on;
+
+subplot(3,1,2);
+plot(t,m);
+xlabel('Temps');
+xlim([0 3*Tsm]);
+title('Représentation du modulant');
+grid on;
+
+subplot(3,1,3);
 plot(t,s);
 xlim([0 3*Tsm]);
 xlabel('Temps');
-title('Représentation Signal Modulé')
-grid on
+title('Représentation du signal modulé en amplitude')
+grid on;
