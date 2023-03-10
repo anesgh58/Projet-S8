@@ -12,7 +12,7 @@ function [s] = onde_AM(m,k,AP,Fp,OSR,Fmax,type,FM)
 N=10000;
 Fs=Fmax*2^OSR;
 Ts=1/Fs;
-t= (1:N)*Ts;
+t= (0:N-1)*Ts;
 p=AP*cos(2*pi*Fp*t);    %Porteuse
 Tsm=1/FM;
 if strcmp(type,"DBSP")
@@ -31,5 +31,5 @@ figure
 plot(t,s);
 xlim([0 3*Tsm]);
 xlabel('Temps');
-title('Représentation Signal Modulé')
+title('Représentation Signal Modulé en amplitude')
 grid on

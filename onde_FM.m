@@ -11,7 +11,7 @@ function [s] = onde_FM(m,AP,Fp,AM,Fm,k,OSR)
 N=10000;
 Fs=Fp*2^OSR;
 Ts=1/Fs;
-t= (1:N)*Ts;
+t= (0:N-1)*Ts;
 Fi=Fp+k*m;
 deltaf=Fi*AM;
 beta=deltaf/Fm;
@@ -20,9 +20,9 @@ Tsm=1/Fm;
 s=AP*cos(2*pi*Fp*t+beta.*sin(2*pi*Fm*t));
 
 %% Affichage
-% figure 
-% plot(t,s);
-% xlim([0 3*Tsm]);
-% xlabel('Temps');
-% title('Représentation Signal Modulé')
-% grid on
+figure 
+plot(t,s);
+xlim([0 3*Tsm]);
+xlabel('Temps');
+title('Représentation Signal Modulé en fréquence')
+grid on
