@@ -3,12 +3,12 @@ clc,
 clear,
 
 %% Signal CM
-T = 1; % Durée du signal
-Te = 0.001; % Temps d'échantillonage
-t1 = 0:Te:T; % Vecteur de temps
-f = 10; % fréquence du signal CW
-A = 1; % amplitude du signal CW
-s1 = A*cos(2*pi*f*t1); % signal CW
+Te = 4e-8;
+T_i = 20e-6;
+T_f = 60e-6;
+[s1,t1] = CW(T_i,T_f, Te) ;
+
+
 
 % Tracé du signal CW
 figure,
@@ -22,23 +22,25 @@ window_length = round(length(s1)/10); % Longueur de la fenêtre
 noverlap = round(window_length/2); % Chevauchement des fenêtres
 
 % Calcul du spectrogramme
+figure,
 spectrogram(s1, window_length, noverlap, [], 1/Te, 'yaxis');
 
 
 %% FMCW 
 % Définition des paramètres du signal
 f = 10; % Fréquence initiale en Hz
-B = 10+150e6; % Bande passante en Hz
-T = 1; % Durée de l'impulsion en secondes
-Te = 1e-3; % Temps d'échantillonage
-t = 0:Te:T; % Vecteur de temps
+B = 10+250e6; % Bande passante en Hz
+T = 40e-6; % Durée de l'impulsion en secondes
+Te = T*1e-5; % Temps d'échantillonage
 
-% Calcul du signal FMCW
-s = cos(2*pi*(f*t + B*(t.^2)/(2*T)));
+[s,t] = FMCW(T_i,T_f, Te, B , f);
+
+
 
 % Tracé du signal FMCW
 figure;
 plot(t, s);
+
 xlabel('Temps (s)');
 ylabel('Amplitude');
 title('Signal FMCW');
@@ -69,9 +71,25 @@ ylabel('Module de la FFT');
 title('FFT du signal FMCW');
 
 % Définition des paramètres du spectrogramme
-window_length = round(length(s)/10); % Longueur de la fenêtre
+window_length = round(length(s)/100); % Longueur de la fenêtre
 noverlap = round(window_length/2); % Chevauchement des fenêtres
 
 % Calcul du spectrogramme
 spectrogram(s, window_length, noverlap, [], 1/Te, 'yaxis');
+
+
+%%
+
+figure,
+A = zeros(1,100001);
+A(:,15000:15000+1000) = s1;
+
+
+spectrogram(A+s, window_length, noverlap, [], 1/Te, 'yaxis');
+
+
+%%%
+
+
+
 
