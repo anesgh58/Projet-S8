@@ -1,55 +1,77 @@
-clc, 
-clear, 
 close all,
+clc,
+clear,
 
-%% CM
-fs = 100000; % fréquence d'échantillonnage
-t = 0:1/fs:1-1/fs; % vecteur de temps
-f = 1000; % fréquence du signal CW
+%% Signal CM
+T = 1; % Durée du signal
+Te = 0.001; % Temps d'échantillonage
+t1 = 0:Te:T; % Vecteur de temps
+f = 10; % fréquence du signal CW
 A = 1; % amplitude du signal CW
-signal1 = A*sin(2*pi*f*t); % signal CW
+s1 = A*cos(2*pi*f*t1); % signal CW
 
-% Affichage du signal
-figure, 
-plot(t, signal1);
+% Tracé du signal CW
+figure,
+plot(t1, s1);
 xlabel('Temps (s)');
 ylabel('Amplitude');
-xlim([0 0.02])
-ylim([-2 2])
 title('Signal CW');
 
-%% Densité spectrale de puissance
-[psd, f] = pwelch(signal1, [], [], [], fs);
-figure,
-plot(f, 10*log10(psd));
-xlabel('Fréquence (Hz)');
-ylabel('Densité spectrale de puissance (dB/Hz)');
-title('DSP du signal CW');
+% Définition des paramètres du spectrogramme
+window_length = round(length(s1)/10); % Longueur de la fenêtre
+noverlap = round(window_length/2); % Chevauchement des fenêtres
 
-%% Transformée de fourrier
+% Calcul du spectrogramme
+spectrogram(s1, window_length, noverlap, [], 1/Te, 'yaxis');
 
-Y = fft(signal1);
-L = length(signal1);
-P2 = abs(Y/L);
-P1 = P2(1:L/2+1);
-P1(2:end-1) = 2*P1(2:end-1);
-f = fs*(0:(L/2))/L;
 
-figure,
-plot(f, P1);
-xlabel('Fréquence (Hz)');
-ylabel('Amplitude');
-title('Transformée de Fourier du signal CW généré sur MATLAB');
+%% FMCW 
+% Définition des paramètres du signal
+f = 10; % Fréquence initiale en Hz
+B = 10+150e6; % Bande passante en Hz
+T = 1; % Durée de l'impulsion en secondes
+Te = 1e-3; % Temps d'échantillonage
+t = 0:Te:T; % Vecteur de temps
 
-%% CMWF
-f0 = 50; % fréquence initiale
-f1 = 1000; % fréquence finale
-signal2 = chirp(t, f0, 1, f1, 'linear'); % signal CWFM
+% Calcul du signal FMCW
+s = cos(2*pi*(f*t + B*(t.^2)/(2*T)));
 
-% Affichage du signal
-figure,
-plot(t, signal2);
+% Tracé du signal FMCW
+figure;
+plot(t, s);
 xlabel('Temps (s)');
-xlim([0 0.2])
-ylim([-1.5 1.5])
-title('Signal Radar CWFM');
+ylabel('Amplitude');
+title('Signal FMCW');
+
+% Calcul de la fréquence instantanée
+f_inst = f + B*t/T;
+
+% Tracé de la fréquence en fonction du temps
+figure;
+plot(t, f_inst);
+xlabel('Temps (s)');
+ylabel('Fréquence (Hz)');
+title('Fréquence instantanée');
+
+
+% Calcul de la FFT du signal FMCW
+%fs = 1/(t(2)-t(1)); % Fréquence d'échantillonnage
+fs = 1/Te;
+nfft = length(s); % Longueur de la FFT
+S = fft(s, nfft)/nfft; % FFT normalisée
+freq = linspace(-fs/2, fs/2, nfft); % Vecteur de fréquences
+
+% Tracé du module de la FFT
+figure;
+plot(freq, abs(fftshift(S)));
+xlabel('Fréquence (Hz)');
+ylabel('Module de la FFT');
+title('FFT du signal FMCW');
+
+% Définition des paramètres du spectrogramme
+window_length = round(length(s)/10); % Longueur de la fenêtre
+noverlap = round(window_length/2); % Chevauchement des fenêtres
+
+% Calcul du spectrogramme
+spectrogram(s, window_length, noverlap, [], 1/Te, 'yaxis');
+
