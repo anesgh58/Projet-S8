@@ -116,10 +116,10 @@ signaux = signaux .* PRx;
 
 %% signal recu
 signal_recu = zeros(len,1);
+% signal recu
 for i=1:n
     signal_recu = signal_recu + signaux(:,i); 
 end
-
 
 % signal_recu = signal_recu>0;
 figure, plot(signal_recu)
@@ -138,6 +138,7 @@ ylabel('Frequency (Hz)');
 colorbar;
 
 %% Binarisation
+
 
 %% figure
 

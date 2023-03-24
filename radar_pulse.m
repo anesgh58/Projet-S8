@@ -12,31 +12,31 @@ var=repmat(vartp,1,nbrepet);
 t=repmat(t,1,nbrepet);
 s=var.*sin(2*pi*Fp*t);
 
-%% Calcul du périodogramme
-
-[Perio,f] = periodogram(s,'centered');
-
-figure,
-plot(f,Perio);
-xlabel('Fréquence (Hz)');
-ylabel('Densité spectrale de puissance');
-grid on;
-title('Periodogramme du signal');
-
-%% Calcul de la transformée de Fourrier
-
-TF=fft(s);
-
-figure,
-plot(real(TF));
-grid on;
-title("Transformée de Fourier du signal");
-
-%% Affichage
-
-figure 
-plot(s);
-xlim([0 3*dur]);
-xlabel('Temps');
-title('Représentation Signal radar pulsé')
-grid on
+% %% Calcul du périodogramme
+% 
+% [Perio,f] = periodogram(s,'centered');
+% 
+% figure,
+% plot(f,Perio);
+% xlabel('Fréquence (Hz)');
+% ylabel('Densité spectrale de puissance');
+% grid on;
+% title('Periodogramme du signal');
+% 
+% %% Calcul de la transformée de Fourrier
+% 
+% TF=fft(s);
+% 
+% figure,
+% plot(real(TF));
+% grid on;
+% title("Transformée de Fourier du signal");
+% 
+% %% Affichage
+% 
+% figure 
+% plot(s);
+% xlim([0 3*dur]);
+% xlabel('Temps');
+% title('Représentation Signal radar pulsé')
+% grid on

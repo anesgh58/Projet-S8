@@ -3,7 +3,7 @@ clc,
 clear,
 
 %% Signal CM
-Te = 4e-8;
+Te = 4e-11;
 T_i = 20e-6;
 T_f = 60e-6;
 [s1,t1] = CW(T_i,T_f, Te) ;
@@ -13,10 +13,12 @@ T_f = 60e-6;
 % Tracé du signal CW
 figure,
 plot(t1, s1);
+xlim([0 10e-8]);
+
 xlabel('Temps (s)');
 ylabel('Amplitude');
 title('Signal CW');
-
+%%
 % Définition des paramètres du spectrogramme
 window_length = round(length(s1)/10); % Longueur de la fenêtre
 noverlap = round(window_length/2); % Chevauchement des fenêtres
@@ -29,11 +31,12 @@ spectrogram(s1, window_length, noverlap, [], 1/Te, 'yaxis');
 %% FMCW 
 % Définition des paramètres du signal
 f = 10; % Fréquence initiale en Hz
-B = 10+250e6; % Bande passante en Hz
+B = 50e3; % Bande passante en Hz
 T = 40e-6; % Durée de l'impulsion en secondes
-Te = T*1e-5; % Temps d'échantillonage
-
-[s,t] = FMCW(T_i,T_f, Te, B , f);
+Te = 4e-11; % Temps d'échantillonage
+T_i2 = 40e-6;
+T_f2 = 80e-6;
+[s,t] = FMCW(T_i2,T_f2, Te, B , f);
 
 
 
@@ -42,9 +45,11 @@ figure;
 plot(t, s);
 
 xlabel('Temps (s)');
+xlim([0 1.5e-6])
 ylabel('Amplitude');
 title('Signal FMCW');
 
+%%
 % Calcul de la fréquence instantanée
 f_inst = f + B*t/T;
 
@@ -57,7 +62,6 @@ title('Fréquence instantanée');
 
 
 % Calcul de la FFT du signal FMCW
-%fs = 1/(t(2)-t(1)); % Fréquence d'échantillonnage
 fs = 1/Te;
 nfft = length(s); % Longueur de la FFT
 S = fft(s, nfft)/nfft; % FFT normalisée
@@ -78,18 +82,13 @@ noverlap = round(window_length/2); % Chevauchement des fenêtres
 spectrogram(s, window_length, noverlap, [], 1/Te, 'yaxis');
 
 
-%%
+%% Figures 
 
 figure,
-A = zeros(1,100001);
-A(:,15000:15000+1000) = s1;
+A = zeros(1,100e5);
+A(:,T_i/Te:T_f/Te) = s1;
+C = zeros(1,100e5);
+C(:,T_i2/Te:T_f2/Te) = s;
 
-
-spectrogram(A+s, window_length, noverlap, [], 1/Te, 'yaxis');
-
-
-%%%
-
-
-
+spectrogram(A+C, window_length, noverlap, [], 1/Te, 'yaxis');
 
