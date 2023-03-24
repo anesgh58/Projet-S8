@@ -1,4 +1,4 @@
-function[Pr] = Puissance_generator(Ptx,f,B,vpos1,vpos2)
+function[Pr] = Puissance_generator(Ptx,f,B,vpos1,vpos2,To)
 
 %Ptx: Puissance d'émission du signal
 %f: fréquence d'émission
@@ -15,7 +15,7 @@ Grx=2.15;
 c=physconst('LightSpeed');
 
 %Constante de Boltzmann
-k=physconst('Blotzmann');
+k=physconst('boltzmann');
 
 %Calcul de la longueur d'onde
 lambc=c/f;

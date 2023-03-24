@@ -6,7 +6,6 @@ Ts = 1/B;                                                     % Temps symbole
 Te = 1/fe;                                                    % Période d'échantillonage
 Fse = Ts/Te;                                                  % Facteur de sur-échantillonage
 g = rcosdesign(roll_off,floor(8/roll_off),floor(Fse),'sqrt'); % filtre de mise en forme
-
 %% Tx 
 % Flux binaire généré aléatoirement
 sb = randn(1,N * nb) > 0;  % Flux binaire uniformement distribue, sinon constellation dsiquilibre --> DSP contiendra des raies, Pe non minimisee
@@ -35,8 +34,9 @@ end
 % filtre de mise en forme
 sl = conv(ss_spread,g,'same');
    
-% Emission du signal en bande de base 
-s = sl;
+% Emission du signal sur frequence porteuse
+t = 0:Te:(length(sl)-1)*Te;  
+s = sl .* cos(2*pi*20^4*t);
 
 end
 

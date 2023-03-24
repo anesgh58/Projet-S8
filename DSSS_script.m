@@ -18,7 +18,6 @@ s_fft = fftshift(abs(fft(s,Nfft)));
 ss_fft = fftshift(abs(fft(ss,Nfft)));
 ss_spread_fft = fftshift(abs(fft(ss_spread,Nfft)));
 
-
 %% figures
 
 % Visualtion des signaux dans le domaine temporel et frequentiel 
