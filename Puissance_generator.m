@@ -2,7 +2,8 @@ function[Pr] = Puissance_generator(Ptx,f,B,vpos1,vpos2)
 
 %Ptx: Puissance d'émission du signal
 %f: fréquence d'émission
-%B: le bruit
+%B: la bande passante
+
 
 %Changer par un vecteur
 %x1,y1,z1: altitude, longitude et latitude de satellite
@@ -15,7 +16,7 @@ Grx=2.15;
 c=physconst('LightSpeed');
 
 %Constante de Boltzmann
-k=physconst('Blotzmann');
+k=physconst("Boltzmann");
 
 %Calcul de la longueur d'onde
 lambc=c/f;

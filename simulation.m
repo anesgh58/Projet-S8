@@ -89,11 +89,13 @@ end
 
 % Calcul de PRx de chaque signal
 
-% PRx = [];
-% for i=1:n
-%     PRx = [PRx puissance_generateur(PTX, F, B,coord_sat,coord_terre)];
-% end
-% signaux = signaux .* PRx;
+PRx = [];
+PTX=randi([10e3, 50e5], 1, n);
+for i=1:n
+    PRx = [PRx puissance_generateur(PTX, F, B,coord_sat,coord_terre)];
+end
+%PTX(:,5)=PTX(:,5)*10;
+signaux = signaux .* PRx;
 
 % Generer n instants de debuts differents
 time = randi([1, 50], 1, n);
@@ -113,7 +115,7 @@ window_length = round(length(signal_recu)/100); % Longueur de la fenêtre
 noverlap = round(window_length/2); % Chevauchement des fenêtres
 
 % Calcul du spectrogramme
-spectrogram(signaux(:,6) + signaux(:,7), window_length, noverlap, [], fe, 'yaxis');
+spectrogram(signaux(:,6) + signaux(:,7), noverlap, [], fe, 'yaxis');
 
 
 
