@@ -4,15 +4,11 @@ clc;
 
 %% Initialisation des paramètres
 
-
-fe = 10e3;
-M = 4;
-n_b = log2(M);
+fe = 100e3;
 Te = 1/fe;
 Ds = 1000; % fs = Ds
 Ts = 1/Ds;
-Ns = 5000;
-Nb = Ns*n_b; % Nombre de bits
+Ns = 5000; % Ns = Nb
 Fse = Ts/Te; % Facteur de sur-échantillonage
 
 fc = 2.5e3;
@@ -28,17 +24,15 @@ v0 = conv(ga,g);
 v0_max = v0((1+length(v0))/2);
 
 h = 1;
-SNR = 10;
+SNR = 5;
       
 %% Emetteur
 
-sb = randi([0,M-1],1,Ns);
-sb_bin = de2bi(sb,n_b,'left-msb')';
-sb_bin = sb_bin(:)';
+sb = randi([0,1],1,Ns);
 
 % Modulateur numérique 
 
-ss = qammod(sb,M, InputType='integer');
+ss = sb;
 
 % Sur-echantillonage sur fe
 
@@ -81,21 +75,19 @@ rn = rl(Fse:Fse:end); %porte
 %rn = rl(1+2*Tg/Te:Fse:end); %rcos
 rn = rn/v0_max;
     
-sb_estime = qamdemod(rn,M,'gray',OutputType='integer');
-sb_estime_bin = de2bi(sb_estime,n_b,'left-msb')';
-sb_estime_bin = sb_estime_bin(:)';
+sb_estime = round(rn);
 
-BER = mean(abs(sb_estime_bin-sb_bin(1:length(sb_estime_bin))));
+BER = mean(abs(sb_estime-sb(1:length(sb_estime))));
     
 
 %% Figures
 set(0,'defaulttextInterpreter','latex')
 
-N = 50;
+N = 1000;
 
 figure(1);
 subplot(2,1,1);
-plot((0:N-1)/fe, sb_bin(1:N),'LineWidth', 2,'Color','black');
+plot((0:N-1)/fe, sl(1:N),'LineWidth', 2,'Color','black');
 xlabel('Temps (en s)');
 ylabel('Amplitude');
 ylim([-0.1 1.1]);
@@ -111,14 +103,14 @@ ylim([-1.1 1.1]);
 title("Partie r\'{e}elle de l'enveloppe complexe");
 grid on;
 
-figure(2);
+figure(3);
 plot(real(rn), imag(rn), '.');
 title("Constellation des symboles d\'{e}tect\'{e}s");
 xlabel('I');
 ylabel('Q');
 grid on;
 
-figure(3);
+figure(4);
 Nfft = 512;
 [dsp_sl,f] = pwelch(y,rectwin(Nfft),0,Nfft,fe,'centered');
 
