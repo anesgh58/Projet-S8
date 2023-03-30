@@ -31,7 +31,7 @@ spectrogram(s1, window_length, noverlap, [], 1/Te, 'yaxis');
 %% FMCW 
 % Définition des paramètres du signal
 f = 10; % Fréquence initiale en Hz
-B = 50e3; % Bande passante en Hz
+B = 10+50e6; % Bande passante en Hz
 T = 40e-6; % Durée de l'impulsion en secondes
 Te = 4e-11; % Temps d'échantillonage
 T_i2 = 40e-6;
@@ -89,6 +89,10 @@ A = zeros(1,100e5);
 A(:,T_i/Te:T_f/Te) = s1;
 C = zeros(1,100e5);
 C(:,T_i2/Te:T_f2/Te) = s;
-
 spectrogram(A+C, window_length, noverlap, [], 1/Te, 'yaxis');
+[spe,f,t, pxx] = spectrogram(A+C, window_length, noverlap, [], 1/Te, 'yaxis');
+xlim([0 100])
+ylim([0 0.2])
+figure,
+imagesc(t,f,pow2db(flipud(pxx))>-100)
 
