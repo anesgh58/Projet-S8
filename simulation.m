@@ -133,9 +133,9 @@ noverlap = round(window_length/2); % Chevauchement des fenêtres
 
 
 spectrogram(signal_recu, window_length, noverlap, [], fe, 'yaxis');
-[spect,f,t] = spectrogram(signal_recu, window_length, noverlap, [], fe, 'yaxis');
-spect = 20*log10(abs(spect)) >60;
-imagesc(t, f, spect);
+[spect,f,t,pxx] = spectrogram(signaux(:,6)+signaux(:,7), window_length, noverlap, [], fe, 'yaxis');
+figure,
+imagesc(t,f,pow2db(flipud(pxx))>-100)
 axis xy;
 xlabel('Time (s)');
 ylabel('Frequency (Hz)');

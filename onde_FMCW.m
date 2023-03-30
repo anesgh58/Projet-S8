@@ -93,6 +93,6 @@ spectrogram(A+C, window_length, noverlap, [], 1/Te, 'yaxis');
 [spe,f,t, pxx] = spectrogram(A+C, window_length, noverlap, [], 1/Te, 'yaxis');
 xlim([0 100])
 ylim([0 0.2])
-figure,
+figure(10),
 imagesc(t,f,pow2db(flipud(pxx))>-100)
 
