@@ -4,7 +4,7 @@ clc;
 
 %% Parametres
 
-n=2;                                                          % nombre de signaux a generer
+n=7;                                                          % nombre de signaux a generer
 
 % Signaux numeriques
 % DSSS
@@ -84,17 +84,18 @@ signal_7 = interpolation(signal_7);
 %% Decalage de chaque signal par rapport a l'instant de debut et stockage
 % dans les colonnes d'une matrice
 
-len = max([length(signal_1),length(signal_2),length(signal_3),length(signal_4),length(signal_5),length(signal_6),length(signal_7)]);
+% len = max([length(signal_1),length(signal_2),length(signal_3),length(signal_4),length(signal_5),length(signal_6),length(signal_7)]);
+len = length(signal_1);
 time = randi([1, 5000], 1, n); % Generer n instants de debuts differents
 
 signaux = zeros(len,1);
 signaux(time(1):length(signal_1)+time(1)-1,1) = signal_1;
 signaux(time(2):length(signal_2)+time(2)-1,2) = signal_2;
-% signaux(time(3):length(signal_3)+time(3)-1,3) = signal_3;
-% signaux(time(4):length(signal_4)+time(4)-1,4) = signal_4;
-% signaux(time(5):length(signal_5)+time(5)-1,5) = signal_5;
-% signaux(time(6):length(signal_6)+time(6)-1,6) = signal_6;
-% signaux(time(7):length(signal_7)+time(7)-1,7) = signal_7;
+signaux(time(3):length(signal_3)+time(3)-1,3) = signal_3;
+signaux(time(4):length(signal_4)+time(4)-1,4) = signal_4;
+signaux(time(5):length(signal_5)+time(5)-1,5) = signal_5;
+signaux(time(6):length(signal_6)+time(6)-1,6) = signal_6;
+signaux(time(7):length(signal_7)+time(7)-1,7) = signal_7;
 signaux = signaux(1:len,:);
 
 
@@ -112,7 +113,7 @@ for i=1:n
     PRx(i) = Puissance_generator(PTX(i), fc(i),B,coord_sat,coord_terre(:,i),To);
 end
 signaux = signaux .* PRx;
-% signaux(:,5) = 10 * signaux(:,5);
+signaux(:,5) = 10 * signaux(:,5);
 
 %% signal recu
 signal_recu = zeros(len,1);
@@ -122,7 +123,7 @@ for i=1:n
 end
 
 % signal_recu = signal_recu>0;
-figure, plot(signal_recu)
+% figure, plot(signal_recu)
 
 %% spectrogramme
 
@@ -130,8 +131,11 @@ figure, plot(signal_recu)
 window_length = round(length(signal_recu) /100); % Longueur de la fenêtre
 noverlap = round(window_length/2); % Chevauchement des fenêtres
 
+
+spectrogram(signal_recu, window_length, noverlap, [], fe, 'yaxis');
 [spect,f,t] = spectrogram(signal_recu, window_length, noverlap, [], fe, 'yaxis');
-imagesc(t, f, 20*log10(abs(spect)));
+spect = 20*log10(abs(spect)) >60;
+imagesc(t, f, spect);
 axis xy;
 xlabel('Time (s)');
 ylabel('Frequency (Hz)');
@@ -142,12 +146,12 @@ colorbar;
 
 %% figure
 
-[pho_DSSS,Lc_est_DSSS] = DSSS_detection(signal_recu);    % Détection d'un signal DSSS emis seul
+% [pho_DSSS,Lc_est_DSSS] = DSSS_detection(signal_recu);    % Détection d'un signal DSSS emis seul
 
-figure,
-plot(pho_DSSS)
-xlabel('Échantillons')
-ylabel('Amplitude')
-title("Détection d'un signal DSSS emis seul")
+% figure,
+% plot(pho_DSSS)
+% xlabel('Échantillons')
+% ylabel('Amplitude')
+% title("Détection d'un signal DSSS emis seul")
 
 
