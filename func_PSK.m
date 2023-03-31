@@ -1,4 +1,4 @@
-function [sb_bin, y]= func_MPSK(fe, fs, T_i, T_f, fc, M, filtre, SNR)
+function [sb_bin, y]= func_PSK(fe, fs, T_i, T_f, fc, M, filtre, SNR)
 
     %% Initialisation des paramètres
     Te = 1/fe;
