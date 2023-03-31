@@ -47,7 +47,7 @@ grid on;
 
 
 M = 4;
-[sl3, y3] = func_MPSK(100e3, 1000, 10e-3, 100e-3, 1000, M,"porte", 50);
+[sl3, y3] = func_PSK(100e3, 1000, 10e-3, 100e-3, 1000, M,"porte", 50);
 
 N = 1000;
 
@@ -69,7 +69,7 @@ title("Partie r\'{e}elle de l'enveloppe complexe");
 grid on;
 
 M = 4;
-[sl4, y4] = func_MQAM(100e3, 1000, 10e-3, 100e-3, 1000, M,"porte", 50);
+[sl4, y4] = func_QAM(100e3, 1000, 10e-3, 100e-3, 1000, M,"porte", 50);
 
 N = 1000;
 
