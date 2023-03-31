@@ -1,4 +1,4 @@
-function [sb_bin, y]= func_MQAM(fe, fs, T_i, T_f, fc, M, filtre, SNR)
+function [sb_bin, y]= func_QAM(fe, fs, T_i, T_f, fc, M, filtre, SNR)
 
     %% Initialisation des paramètres
     Te = 1/fe;
