@@ -1,10 +1,6 @@
-clear;
-close all;
-clc;
-
-%% Parametres
-
-n=7;                                                          % nombre de signaux a generer
+function [signal_recu,signaux,fe] = simulation(n,Tbuffer)
+    
+Tbuffer;
 
 % Signaux numeriques
 % DSSS
@@ -41,7 +37,7 @@ fc_2 = Fp;
 Te_3 = 4e-8;
 fe_3 = 1/Te_3;
 T_i = 20e-6;
-T_f = 60e-6;
+T_f = 25e-6;
 fc_3 = 60*10e5;
 
 % FMCW 
@@ -59,99 +55,82 @@ fe_s = [fe_1, fe_2,fe_3,fe_4];
 fc = [fc_1, ones(1,4)* fc_2,fc_3,fc_4];
 fe = min(fe_s); % Suréchantillonnage
 
+
 %% Generation des signaux et suréchantillonnage au rythme fe
-[~,~,signal_1] = DSSS(N_1,B_1,fe_1,roll_off);                                    % DSSS
-signal_1 = upsample(signal_1,floor(fe/fe_s(1))); 
-signal_2 = upsample(onde_FM(m,Am,Fm,k,p,Ap,Fp,OSR),floor(fe/fe_s(2))+1);         % FM
-signal_3 = upsample(onde_AM(m,Fm,k,p,Ap,Fp,OSR,'DBAP'),floor(fe/fe_s(2))+1);     % AM
-signal_4 = upsample(onde_PM(m,Fm,Am,p,Ap,Fp,OSR,5),floor(fe/fe_s(2))+1);         % PM
-signal_5 = upsample(radar_pulse(100,10000,Fp,OSR,5),floor(fe/fe_s(2))+1);        % radar
-[signal_6,~] = CW(T_i,T_f, Te_3);                                                % CW
-signal_6 = upsample(signal_6,floor(fe/fe_s(3))+1) ;                                
-[signal_7,~] = FMCW(T_i,T_f,  Te_4, B_4, f_4);                                   % FMCW
-signal_7= upsample(signal_7,floor(fe/fe_s(4))+1);  
 
-%% Interpolation linéaire
-signal_1 = interpolation(signal_1);
-signal_2 = interpolation(signal_2);
-signal_3 = interpolation(signal_3);
-signal_4 = interpolation(signal_4);
-signal_5 = interpolation(signal_5);
-signal_6 = interpolation(signal_6);
-signal_7 = interpolation(signal_7);
+    [signal_1,~,~] = DSSS(N_1,B_1,fe_1,roll_off);                                    % DSSS
+    signal_1 = upsample(signal_1,floor(fe/fe_s(1))); 
+    signal_2 = upsample(onde_FM(m,Am,Fm,k,p,Ap,Fp,OSR),floor(fe/fe_s(2))+1);         % FM
+    signal_3 = upsample(onde_AM(m,Fm,k,p,Ap,Fp,OSR,'DBAP'),floor(fe/fe_s(2))+1);     % AM
+    signal_4 = upsample(onde_PM(m,Fm,Am,p,Ap,Fp,OSR,5),floor(fe/fe_s(2))+1);         % PM
+    signal_5 = upsample(radar_pulse(100,10000,Fp,OSR,5),floor(fe/fe_s(2))+1);        % radar
+    [signal_6,~] = CW(T_i,T_f, Te_3);                                                % CW
+    signal_6 = upsample(signal_6,floor(fe/fe_s(3))+1) ;                                
+    [signal_7,~] = FMCW(T_i,T_f,  Te_4, B_4, f_4);                                   % FMCW
+    signal_7= upsample(signal_7,floor(fe/fe_s(4))+1);  
+    
+    %% Interpolation linéaire
+    signal_1 = interpolation(signal_1);
+    signal_2 = interpolation(signal_2);
+    signal_3 = interpolation(signal_3);
+    signal_4 = interpolation(signal_4);
+    signal_5 = interpolation(signal_5);
+    signal_6 = interpolation(signal_6);
+    signal_7 = interpolation(signal_7);
+    
+    
+    %% Decalage de chaque signal par rapport a l'instant de debut et stockage
+    % dans les colonnes d'une matrice
+    
+    % len = max([length(signal_1),length(signal_2),length(signal_3),length(signal_4),length(signal_5),length(signal_6),length(signal_7)]);
+    len = length(signal_1);
+    time = randi([1, 5000], 1, n); % Generer n instants de debuts differents
+    
+    signaux = zeros(len,1);
+    signaux(time(1):length(signal_1)+time(1)-1,1) = signal_1;
+    signaux(time(2):length(signal_2)+time(2)-1,2) = signal_2;
+    signaux(time(3):length(signal_3)+time(3)-1,3) = signal_3;
+    signaux(time(4):length(signal_4)+time(4)-1,4) = signal_4;
+    signaux(time(5):length(signal_5)+time(5)-1,5) = signal_5;
+    signaux(time(6):length(signal_6)+time(6)-1,6) = signal_6;
+    signaux(time(7):length(signal_7)+time(7)-1,7) = signal_7;
+    signaux = signaux(1:len,:);
 
 
-%% Decalage de chaque signal par rapport a l'instant de debut et stockage
-% dans les colonnes d'une matrice
+    %% Multiplication de chaque signal par PTX
+    PRx = zeros(1,n);
+    PTX = randi([10e3, 50e5],1,n);
+    B = 2 * fe;
+    coord_sat = [randi([1000 2000],1), randi([0 360],1), randi([0 90],1)];
+    temperatures = [150, -120];
+    idx = randi([1,2]);
+    To = temperatures(idx);
+    coord_terre = zeros(3,n);
+    for i=1:n
+        coord_terre(:,i) = [randi([30 60],1), randi([0 360],1), randi([0 90],1)];
+        PRx(i) = Puissance_generator(PTX(i), fc(i),B,coord_sat,coord_terre(:,i),To);
+    end
+    signaux = signaux .* PRx;
+    signaux(:,5) = 10 * signaux(:,5);
+    
+    %% signal recu
+    signal_recu = zeros(len,1);
+    % signal recu
+    for i=1:n
+        signal_recu = signal_recu + signaux(:,i); 
+    end
 
-% len = max([length(signal_1),length(signal_2),length(signal_3),length(signal_4),length(signal_5),length(signal_6),length(signal_7)]);
-len = length(signal_1);
-time = randi([1, 5000], 1, n); % Generer n instants de debuts differents
-
-signaux = zeros(len,1);
-signaux(time(1):length(signal_1)+time(1)-1,1) = signal_1;
-signaux(time(2):length(signal_2)+time(2)-1,2) = signal_2;
-signaux(time(3):length(signal_3)+time(3)-1,3) = signal_3;
-signaux(time(4):length(signal_4)+time(4)-1,4) = signal_4;
-signaux(time(5):length(signal_5)+time(5)-1,5) = signal_5;
-signaux(time(6):length(signal_6)+time(6)-1,6) = signal_6;
-signaux(time(7):length(signal_7)+time(7)-1,7) = signal_7;
-signaux = signaux(1:len,:);
-
-
-%% Multiplication de chaque signal par PTX
-PRx = zeros(1,n);
-PTX = randi([10e3, 50e5],1,n);
-B = 2 * fe;
-coord_sat = [randi([1000 2000],1), randi([0 360],1), randi([0 90],1)];
-temperatures = [150, -120];
-idx = randi([1,2]);
-To = temperatures(idx);
-coord_terre = zeros(3,n);
-for i=1:n
-    coord_terre(:,i) = [randi([30 60],1), randi([0 360],1), randi([0 90],1)];
-    PRx(i) = Puissance_generator(PTX(i), fc(i),B,coord_sat,coord_terre(:,i),To);
 end
-signaux = signaux .* PRx;
-signaux(:,5) = 10 * signaux(:,5);
 
-%% signal recu
-signal_recu = zeros(len,1);
-% signal recu
-for i=1:n
-    signal_recu = signal_recu + signaux(:,i); 
-end
+% 0 9
+% -1 8
+% -2 7
+% -3 6
+% -4 5
+% -5 4
+% -6 3
+% -7 2
+% -8 1
 
-% signal_recu = signal_recu>0;
-% figure, plot(signal_recu)
-
-%% spectrogramme
-
-% Définition des paramètres du spectrogramme
-window_length = round(length(signal_recu) /100); % Longueur de la fenêtre
-noverlap = round(window_length/2); % Chevauchement des fenêtres
-
-
-spectrogram(signal_recu, window_length, noverlap, [], fe, 'yaxis');
-[spect,f,t,pxx] = spectrogram(signaux(:,6)+signaux(:,7), window_length, noverlap, [], fe, 'yaxis');
-figure,
-imagesc(t,f,pow2db(flipud(pxx))>-100)
-axis xy;
-xlabel('Time (s)');
-ylabel('Frequency (Hz)');
-colorbar;
-
-%% Binarisation
-
-
-%% figure
-
-% [pho_DSSS,Lc_est_DSSS] = DSSS_detection(signal_recu);    % Détection d'un signal DSSS emis seul
-
-% figure,
-% plot(pho_DSSS)
-% xlabel('Échantillons')
-% ylabel('Amplitude')
-% title("Détection d'un signal DSSS emis seul")
 
 

@@ -68,3 +68,4 @@ subplot(1,2,2)
 pwelch(s, ones(1,length(ss)),0,length(ss),fe,'centered');
 
 
+

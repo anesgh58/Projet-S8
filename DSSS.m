@@ -36,7 +36,7 @@ sl = conv(ss_spread,g,'same');
    
 % Emission du signal sur frequence porteuse
 t = 0:Te:(length(sl)-1)*Te;  
-s = sl .* cos(2*pi*20^4*t);
+s = sl .* cos(2*pi*2^4*t);
 
 end
 

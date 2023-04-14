@@ -94,5 +94,5 @@ spectrogram(A+C, window_length, noverlap, [], 1/Te, 'yaxis');
 xlim([0 100])
 ylim([0 0.2])
 figure(10),
-imagesc(t,f,pow2db(flipud(pxx))>-100)
+imagesc(t,f,pow2db(flipud(pxx))>75)
 
