@@ -41,7 +41,7 @@ fc_2 = Fp;
 Te_3 = 4e-8;
 fe_3 = 1/Te_3;
 T_i = 20e-6;
-T_f = 60e-6;
+T_f = 25e-6;
 fc_3 = 60*10e5;
 
 % FMCW 
@@ -135,7 +135,7 @@ noverlap = round(window_length/2); % Chevauchement des fenêtres
 spectrogram(signal_recu, window_length, noverlap, [], fe, 'yaxis');
 [spect,f,t,pxx] = spectrogram(signaux(:,6)+signaux(:,7), window_length, noverlap, [], fe, 'yaxis');
 figure,
-imagesc(t,f,pow2db(flipud(pxx))>-100)
+imagesc(t,f,pow2db(pxx)>75)
 axis xy;
 xlabel('Time (s)');
 ylabel('Frequency (Hz)');

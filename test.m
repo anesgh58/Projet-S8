@@ -1,29 +1,25 @@
-clear,
-close all,
-clc,
+% Lire le fichier SVG
+I = imread('C:\Users\User\Desktop\Départements_de_France-simple.jpg');
 
-Am=1;
-Fm=1*10^3;
-Ap=1;
-k=0.5;
-Fp=10*10^3;
 
-OSR=4;
-N=10000;
-Fmax=10*10^3;
-Fs=Fmax*2^OSR;
-Ts=1/Fs;
-t= (1:N)*Ts;
-%Modulation
-m=Am*cos(2*pi*Fm*t);
+% Créer une image masque transparente
+mask = zeros(size(I,1), size(I,2), 'uint8');
+center = [size(I,2)/2, size(I,1)/2]; % Calculer le centre de l'image
+radius = 1300; % Définir le rayon du cercle
+mask = insertShape(mask, 'FilledCircle', [center(1) center(2) radius], 'Opacity', 0.7, 'Color', 'white'); % Remplir le cercle avec de la transparence
 
-%Porteuse
-p=Ap*cos(2*pi*Fp*t);
 
-onde_AM(m,Fm,k,p,Ap,Fp,OSR,'DBAP');
+% Combiner l'image d'origine avec la masque
+I2 = imfuse(I, mask, 'blend'); % ou utiliser imoverlay(I, mask)
 
-onde_FM(m,Am,Fm,k,p,Ap,Fp,OSR);
+% Afficher l'image sur un axe de figure
+imshow(I2);
 
-onde_PM(m,Fm,Am,p,Ap,Fp,OSR,5);
+% Ajouter un disque rouge transparent au centre de l'image
+center = [size(I,2)/2, size(I,1)/2]; % Calculer le centre de l'image
+radius = 10; % Définir le rayon du disque
+viscircles(center, radius, 'Color', 'r'); % Afficher le disque
 
-radar_pulse(100,10000,Fp,OSR,5);
+
+
+
