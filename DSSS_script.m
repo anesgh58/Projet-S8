@@ -5,8 +5,8 @@ close all;
 
 %% Parametres
 N = 2^10;                                                     % Nombre de bits 
-B = 22e3;                                                     % Largeur de bande du signal
-fe = 50e3;                                                    % Fréquence d'échantillonage
+B = 100e6;                                                    % Largeur de bande du signal
+fe = 50e8;                                                     % Fréquence d'échantillonage
 roll_off = 0.5;                                               % Facteur de roll-off
 Nfft = N;                                                     % Nombre de point dans la FFT 
 f = fe/Nfft * (0:(Nfft-1)) - fe/2 ;                           % Axe des fréquentiel

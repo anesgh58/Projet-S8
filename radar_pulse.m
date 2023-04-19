@@ -6,7 +6,7 @@ function [s] = radar_pulse(tau,dur,Fp,OSR,nbrepet)
 
 Fs=Fp*2^OSR;
 Ts=1/Fs;
-t= (0:dur-1)*Ts;
+t= (0:Ts:(dur-1)*Ts);
 vartp=[ones(1,tau),zeros(1,dur-tau)];
 var=repmat(vartp,1,nbrepet);
 t=repmat(t,1,nbrepet);

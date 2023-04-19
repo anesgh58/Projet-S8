@@ -2,10 +2,11 @@ function [s,ss,ss_spread] = DSSS(N,B,fe,roll_off)
 
 %% Parametres
 nb = 1;                                                       % Nombre de bit/symbole (BPSK)
-Ts = 1/B;                                                     % Temps symbole
+Ts = 1/(2*B);                                                   % Temps symbole
 Te = 1/fe;                                                    % Période d'échantillonage
 Fse = Ts/Te;                                                  % Facteur de sur-échantillonage
-g = rcosdesign(roll_off,floor(8/roll_off),floor(Fse),'sqrt'); % filtre de mise en forme
+Span = 8;
+g = rcosdesign(roll_off,Span,floor(Fse),'sqrt'); % filtre de mise en forme
 %% Tx 
 % Flux binaire généré aléatoirement
 sb = randn(1,N * nb) > 0;  % Flux binaire uniformement distribue, sinon constellation dsiquilibre --> DSP contiendra des raies, Pe non minimisee
@@ -36,7 +37,8 @@ sl = conv(ss_spread,g,'same');
    
 % Emission du signal sur frequence porteuse
 t = 0:Te:(length(sl)-1)*Te;  
-s = sl .* cos(2*pi*2^4*t);
+s = sl .* cos(2*pi*20e5*t);
+% s = sl;
 
 end
 

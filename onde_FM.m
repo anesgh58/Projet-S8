@@ -8,10 +8,10 @@ function [s] = onde_FM(m,Am,Fm,k,p,Ap,Fp,OSR)
 %k: Indice de modulation
 %OSR: Ratio de dépassement
 
-N=10000;
+N=1000;
 Fs=Fp*2^OSR;
 Ts=1/Fs;
-t= (0:N-1)*Ts;
+t= (0:Ts:(N-1)*Ts);
 Fi=Fp+k*m;
 deltaf=Fi*Am;
 beta=deltaf/Fm;

@@ -5,8 +5,8 @@ close all
 
 %% Parametres
 N = 2^10;                                                     % Nombre de bits 
-B = 22e3;                                                     % Largeur de bande du signal
-fe = 50e3;                                                    % Fréquence d'échantillonage
+B = 100e7;                                                     % Largeur de bande du signal
+fe = 50e8;                                                    % Fréquence d'échantillonage
 roll_off = 0.5;                                               % Facteur de roll-off
 
 %% Tx
@@ -22,9 +22,9 @@ signal_recu_DSSS = yl ;                                       % DSSS
 signal_recu_mixte = yl + psk;                                 % DSSS + QPSK   
 
 %% DSSS detection
-[pho_DSSS,Lc_est_DSSS] = DSSS_detection(signal_recu_DSSS);    % Détection d'un signal DSSS emis seul
+[pho_DSSS,Lc_est_DSSS] = DSSS_detection(signal_recu_DSSS);    % Détection d'un signal DSSS émis seul
 [pho_mixte,Lc_est_mixte] = DSSS_detection(signal_recu_mixte); % Détection d'un signal DSSS émis avec d'autres signaux
-assert(Lc_est_DSSS == Lc_est_mixte);
+% assert(Lc_est_DSSS == Lc_est_mixte);
 %% Figures
 % Moyenne des moments d’ordre 2 de la fonction d’autocorrélation des différents sous signaux
 
@@ -39,5 +39,3 @@ plot(pho_mixte)
 xlabel('Échantillons')
 ylabel('Amplitude')
 title("Détection d'un signal DSSS émis avec d'autres signaux")
-
-

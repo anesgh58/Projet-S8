@@ -21,8 +21,8 @@ pho = pho/sze_cor(1);
 
 % Estimation de Lc à partir de la période du signal
 maximum = max(pho);
-[~,locs]=findpeaks(double(pho>maximum/1.7));
-Lc_est = (locs(end) - locs(1))/(length(locs)-1);
+[~,locs]=findpeaks(pho,'MinPeakHeight',maximum/1.5);
+Lc_est = round((locs(end) - locs(1))/(length(locs)-1));
 
 end
 

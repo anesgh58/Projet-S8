@@ -2,7 +2,7 @@ close all,
 clc,
 clear,
 
-%% Signal CM
+%% Signal CW
 Te = 4e-11;
 T_i = 20e-6;
 T_f = 60e-6;
@@ -28,7 +28,7 @@ figure,
 spectrogram(s1, window_length, noverlap, [], 1/Te, 'yaxis');
 
 
-%% FMCW 
+%% FMCW
 % Définition des paramètres du signal
 f = 10; % Fréquence initiale en Hz
 B = 10+50e6; % Bande passante en Hz
@@ -82,17 +82,22 @@ noverlap = round(window_length/2); % Chevauchement des fenêtres
 spectrogram(s, window_length, noverlap, [], 1/Te, 'yaxis');
 
 
-%% Figures 
+%% Figures
 
 figure,
 A = zeros(1,100e5);
 A(:,T_i/Te:T_f/Te) = s1;
 C = zeros(1,100e5);
 C(:,T_i2/Te:T_f2/Te) = s;
-spectrogram(A+C, window_length, noverlap, [], 1/Te, 'yaxis');
+B = randn(1,100e5);
+spectrogram(C+B, window_length, noverlap, [], 1/Te, 'yaxis');
 [spe,f,t, pxx] = spectrogram(A+C, window_length, noverlap, [], 1/Te, 'yaxis');
-xlim([0 100])
-ylim([0 0.2])
-figure(10),
-imagesc(t,f,pow2db(flipud(pxx))>75)
+xlim([10 90])
+ylim([0 0.06])
+%%
+% figure(10),
+imagesc(t,f,pow2db(flipud(pxx))<-70)
 
+xlim([0.1*10^-4 0.9*10^-4])
+ylim([1.23*10^10 1.25*10^10])
+colormap('gray');

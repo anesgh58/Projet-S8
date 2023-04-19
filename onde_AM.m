@@ -9,10 +9,10 @@ function [s] = onde_AM(m,Fm,k,p,Ap,Fp,OSR,type)
 %type: DBSP, DBAP et BLU
 %Fm: Fréquence modulant
 
-N=10000;
+N=1000;
 Fs=Fp*2^OSR;
 Ts=1/Fs;
-t= (0:N-1)*Ts;
+t= (0:Ts:(N-1)*Ts);
 Tsm=1/Fm;
 if strcmp(type,"DBSP")
     s=p.*m;
