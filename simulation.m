@@ -14,7 +14,7 @@ Am=1;
 Fm=1*10^2;
 Ap=1;
 k=0.5;
-Fp_AM=1400*10^3;
+Fp_AM=1600e3;
 Fp_FM=100*10^6;
 OSR=4;
 N_2=1000;
@@ -92,7 +92,7 @@ signaux = signaux(1:int32(len),:);
 
 %% Multiplication de chaque signal par PTX
 PRx = zeros(1,n);
-PTX = randi([40e5, 65e5],1,n);
+PTX = randi([50e5, 65e5],1,n);
 B = 2 * fe;
 coord_sat = [randi([500 1000],1), randi([0 360],1), randi([0 90],1)];
 temperatures = [150, -120];

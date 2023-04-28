@@ -1,9 +1,9 @@
 function [h] = synchro(decalage)
 
 d = -9 + decalage;
-p = hann(21);
-for n=1:length(p)
-h(n) = sinc(pi * (n - 10 - d)) * p(n);
+
+for n=1:200
+h(n) = sinc(pi * (n - 10 - d)) ;
 end
 % decalage de 9 echantillons
 if d==0

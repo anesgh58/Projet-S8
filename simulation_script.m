@@ -10,16 +10,15 @@ bruit = randn(1,round(Tbuffer*fe));
 
 %% spectrogramme
 % Définition des paramètres du spectrogramme
-window_length = round( ( length(signaux(:,1)) +length(signaux(:,6)) + length(signaux(:,7))   ) /100); % Longueur de la fenêtre
+window_length = round( (length(signaux(:,1)) ) /100); % Longueur de la fenêtre
 noverlap = round(window_length/2);               % Chevauchement des fenêtres
-test_signal = signaux(:,1) + signaux(:,6) + signaux(:,7) + bruit.'   ;
+test_signal = signaux(:,1)    ;
 [spect,f,t,pxx] = spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
-
 spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
 title('Spectrogramme du signal reçu')
 
 %% Binarisation
-spect_binarise = pow2db(pxx)<5;
+spect_binarise = pow2db(pxx)<45;
 
 figure,
 imagesc(t,f,spect_binarise)
@@ -30,9 +29,20 @@ ylabel('Frequency (Hz)');
 colorbar;
 title('Spectrogramme du signal binarisé')
 
-%% Filtres passe bandes et classification
 %% DSSS
-% filtre
+%% Filtres passe bas + Decimation
+y = test_signal;
+for i=1:2
+    y = decimate(lowpass(y,fe/2,fe),2);
+    figure,
+    window_length = round((length(y)) /100);            % Longueur de la fenêtre
+    noverlap = round(window_length/2);  
+    spectrogram(y, window_length, noverlap, [], fe, 'yaxis');
+
+end
+
+
+
 bandwidth = 1.5e9 - 0.9e9;
 center_freq = 0.8e9;
 filtered_signal = pass_filter(test_signal,bandwidth,center_freq,fe);
@@ -50,7 +60,7 @@ ylabel('Frequency (Hz)');
 colorbar;
 title('Spectrogramme du signal reçu filtré (DSSS)')
 
-% Classification
+%% classification
 [pho_DSSS,Lc_DSSS] = DSSS_detection(signaux(:,1));             % Détection d'un signal DSSS émis seul
 [pho_est_DSSS,Lc_est_DSSS] = DSSS_detection(filtered_signal);  % Détection d'un signal DSSS 
 if ( (0.85 * Lc_DSSS  <= Lc_est_DSSS) && (Lc_est_DSSS <= 1.5 * Lc_DSSS))
@@ -86,9 +96,35 @@ title("Évolution temporel du signal DSSS après filtrage")
 
 %% Autre modulation 
 
-
-
-
-
+% test_signal = signaux(:,2);
+% 
+% window_length = round((length(test_signal)) /100);            % Longueur de la fenêtre
+% noverlap = round(window_length/2);  
+% [spect,f,t,pxx_t] = spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
+% figure,
+% spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
+% % figure,
+% % imagesc(t,f,flipud(pxx_t))
+% % axis xy;
+% % xlabel('Time (s)');
+% % ylabel('Frequency (Hz)');
+% % colorbar;
+% 
+% % filtre
+% bandwidth = 0.8e9 - 0.4e9;
+% center_freq = 0.4e9;
+% filtered_signal = pass_filter(test_signal,bandwidth,center_freq,fe);
+% 
+% % Spectrogramme du signal filtré
+% window_length = round((length(filtered_signal)) /100);            % Longueur de la fenêtre
+% noverlap = round(window_length/2);  
+% [spect,f,t,pxx_t] = spectrogram(filtered_signal, window_length, noverlap, [], fe, 'yaxis');
+% 
+% figure,
+% imagesc(t,f,flipud(pxx_t))
+% axis xy;
+% xlabel('Time (s)');
+% ylabel('Frequency (Hz)');
+% colorbar;
 
 
