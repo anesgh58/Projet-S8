@@ -11,29 +11,38 @@ fc_1 = 20*10^4;
 % Signaux analogiques
 % onde FM
 Am=1;
-Fm=1*10^3;
+Fm=1*10^2;
 Ap=1;
 k=0.5;
-Fp=1*10^8;
+Fp_AM=1400*10^3;
+Fp_FM=100*10^6;
 OSR=4;
 N_2=1000;
-Fs=Fp*2^OSR;
-Ts=1/Fs;
-t=(0:Ts:(N_2-1)*Ts);
+Fs_AM=Fp_AM*2^OSR;
+Fs_FM=Fp_FM*2^OSR;
+Ts_AM=1/Fs_AM;
+Ts_FM=1/Fs_FM;
+t_AM=(0:Ts_AM:(N_2-1)*Ts_AM);
+t_FM=(0:Ts_FM:(N_2-1)*Ts_FM);
 %Modulation
-m=Am*cos(2*pi*Fm*t);
+m_AM=Am*cos(2*pi*Fm*t_AM);
+m_FM=Am*cos(2*pi*Fm*t_FM);
 %Porteuse
-p=Ap*cos(2*pi*Fp*t);
-fe_2 = Fs;
-fc_2 = Fp;
+p_AM=Ap*cos(2*pi*Fp_AM*t_AM);
+p_FM=Ap*cos(2*pi*Fp_FM*t_FM);
+fe_2 = Fs_AM;
+fe_3 = Fs_FM;
+fc_2 = Fp_AM;
+fc_3 = Fp_FM;
 
 % Signaux radars
 % CW
 Te_3 = 4e-9;
-fe_3 = 1/Te_3;
+fe_4 = 1/Te_3;
 T_i = 20e-6;
 T_f = 25e-6;
-fc_3 = 60*10e5;
+Fp_RadarPulse=2*10^9;
+fc_4 = 60*10e5;
 
 % FMCW 
 % Définition des paramètres du signal
@@ -41,13 +50,13 @@ f_4 = 10;     % Fréquence initiale en Hz
 B_4 = 10+250e6; % Bande passante en Hz
 T_4 = 40e-6; % Durée de l'impulsion en secondes
 Te_4 = T_4*1e-5; % Temps d'échantillonage
-fe_4 = 1/Te_4;
-fc_4 = f_4;
+fe_5 = 1/Te_4;
+fc_5 = f_4;
 
 
 %% Signaux
-fe_s = [fe_1, fe_2,fe_3,fe_4];
-fc = [fc_1, ones(1,4)* fc_2,fc_3,fc_4];
+fe_s = [fe_1, fe_2,fe_3,fe_4,fe_5];
+fc = [fc_1, ones(1,4)* fc_2,ones(1,4)* fc_3,fc_4,fc_5];
 fe = max(fe_s); % Suréchantillonnage
 
 
@@ -55,10 +64,10 @@ fe = max(fe_s); % Suréchantillonnage
 
 [signal_1,~,~] = DSSS(N_1,B_1,fe_1,roll_off);                                    % DSSS
 signal_1 = conv(signal_1,synchro(round(fe/fe_s(1))));
-signal_2 = conv(onde_FM(m,Am,Fm,k,p,Ap,Fp,OSR),synchro(round(fe/fe_s(2))));      % FM
-signal_3 = conv(onde_AM(m,Fm,k,p,Ap,Fp,OSR,'DBAP'),synchro(round(fe/fe_s(2))));  % AM
-signal_4 = conv(onde_PM(m,Fm,Am,p,Ap,Fp,OSR,5),synchro(round(fe/fe_s(2))));      % PM
-signal_5 = conv(radar_pulse(100,10000,Fp,OSR,5),synchro(round(fe/fe_s(2))));
+signal_2 = conv(onde_FM(m_FM,Am,Fm,k,p_FM,Ap,Fp_FM,OSR),synchro(round(fe/fe_s(2))));      % FM
+signal_3 = conv(onde_AM(m_AM,Fm,k,p_AM,Ap,Fp_AM,OSR,'DBAP'),synchro(round(fe/fe_s(2))));  % AM
+signal_4 = conv(onde_PM(m_AM,Fm,Am,p_AM,Ap,Fp_FM,OSR,5),synchro(round(fe/fe_s(2))));      % PM
+signal_5 = conv(radar_pulse(100,10000,Fp_RadarPulse,OSR,5),synchro(round(fe/fe_s(2))));
 [signal_6,~] = CW(T_i,T_f, Te_3);                                                % CW
 signal_6 = conv(signal_6,synchro(round(fe/fe_s(3)))) ;                                
 [signal_7,~] = FMCW(T_i,T_f,  Te_4, B_4, f_4);                                   % FMCW
