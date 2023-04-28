@@ -10,7 +10,7 @@ bruit = randn(1,round(Tbuffer*fe));
 
 %% spectrogramme
 % Définition des paramètres du spectrogramme
-window_length = round( ( length(signaux(:,1)) + length(signaux(:,6)) + length(signaux(:,7)) ) /100); % Longueur de la fenêtre
+window_length = round( ( length(signaux(:,1)) +length(signaux(:,6)) + length(signaux(:,7))   ) /100); % Longueur de la fenêtre
 noverlap = round(window_length/2);               % Chevauchement des fenêtres
 test_signal = signaux(:,1) + signaux(:,6) + signaux(:,7) + bruit.'   ;
 [spect,f,t,pxx] = spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
@@ -33,9 +33,9 @@ title('Spectrogramme du signal binarisé')
 %% Filtres passe bandes et classification
 %% DSSS
 % filtre
-bandwidth = 1.5e9 - 0e9;
+bandwidth = 1.5e9 - 0.9e9;
 center_freq = 0.8e9;
-filtered_signal = pass_filter(signal_recu,bandwidth,center_freq,fe);
+filtered_signal = pass_filter(test_signal,bandwidth,center_freq,fe);
 
 % Spectrogramme du signal filtré
 window_length = round((length(filtered_signal)) /100);            % Longueur de la fenêtre
