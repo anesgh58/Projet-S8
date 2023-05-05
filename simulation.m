@@ -30,10 +30,10 @@ m_FM=Am*cos(2*pi*Fm*t_FM);
 %Porteuse
 p_AM=Ap*cos(2*pi*Fp_AM*t_AM);
 p_FM=Ap*cos(2*pi*Fp_FM*t_FM);
-fe_2 = Fs_AM;
-fe_3 = Fs_FM;
-fc_2 = Fp_AM;
-fc_3 = Fp_FM;
+fe_2 = Fs_FM;
+fe_3 = Fs_AM;
+fc_2 = Fp_FM;
+fc_3 = Fp_AM;
 
 % Signaux radars
 % CW
