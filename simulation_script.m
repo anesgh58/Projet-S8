@@ -10,9 +10,9 @@ bruit = randn(1,round(Tbuffer*fe));
 
 %% spectrogramme
 % Définition des paramètres du spectrogramme
-window_length = round( (length(signaux(:,6)) + length(signaux(:,2)) + length(signaux(:,3)) ) /100); % Longueur de la fenêtre
+window_length = round( (length(signaux(:,3)) + length(signaux(:,2)) + length(signaux(:,7)) ) /100); % Longueur de la fenêtre
 noverlap = round(window_length/2);               % Chevauchement des fenêtres
-test_signal = signaux(:,6) +  signaux(:,2) +  signaux(:,3)   ;
+test_signal = signaux(:,3) + signaux(:,7) + signaux(:,2)  ;
 [spect,f,t,pxx] = spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
 spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
 title('Spectrogramme du signal reçu')
@@ -36,13 +36,15 @@ N = 50;
 test_signal = normalize(test_signal);
 h_low = fir1(N,1/2,'low',hamming(N+1));
 h_high = fir1(N,1/2,'high',hamming(N+1));
-bandwith_signal = 0.2/fe;
+bandwith_signal = 0.2e6/2.5e6;
 B =1;
 i =1;
+signal_low_all = [];
+signal_high_all = [];
 
-[signal_low_all_1,signal_high_all_1,signal_low_all_2,signal_high_all_2,B] = filtrage(N,test_signal,B,h_low,h_high,bandwith_signal,i);
-
-
+[signal_low_all,signal_high_all,B] = filtrage(N,test_signal,B,h_low,h_high,bandwith_signal,i,signal_low_all,signal_high_all);
+figure,
+pwelch(nonzeros(signal_low_all(:,end)));
 
 bandwidth = 1.5e9 - 0.9e9;
 center_freq = 0.8e9;
