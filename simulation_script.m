@@ -10,9 +10,9 @@ bruit = randn(1,round(Tbuffer*fe));
 
 %% spectrogramme
 % Définition des paramètres du spectrogramme
-window_length = round( (length(signaux(:,1)) ) /100); % Longueur de la fenêtre
+window_length = round( (length(signaux(:,6)) + length(signaux(:,2)) + length(signaux(:,3)) ) /100); % Longueur de la fenêtre
 noverlap = round(window_length/2);               % Chevauchement des fenêtres
-test_signal = signaux(:,1)    ;
+test_signal = signaux(:,6) +  signaux(:,2) +  signaux(:,3)   ;
 [spect,f,t,pxx] = spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
 spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
 title('Spectrogramme du signal reçu')
@@ -31,15 +31,16 @@ title('Spectrogramme du signal binarisé')
 
 %% DSSS
 %% Filtres passe bas + Decimation
-y = test_signal;
-for i=1:2
-    y = decimate(lowpass(y,fe/2,fe),2);
-    figure,
-    window_length = round((length(y)) /100);            % Longueur de la fenêtre
-    noverlap = round(window_length/2);  
-    spectrogram(y, window_length, noverlap, [], fe, 'yaxis');
 
-end
+N = 50;
+test_signal = normalize(test_signal);
+h_low = fir1(N,1/2,'low',hamming(N+1));
+h_high = fir1(N,1/2,'high',hamming(N+1));
+bandwith_signal = 0.2/fe;
+B =1;
+i =1;
+
+[signal_low_all_1,signal_high_all_1,signal_low_all_2,signal_high_all_2,B] = filtrage(N,test_signal,B,h_low,h_high,bandwith_signal,i);
 
 
 
