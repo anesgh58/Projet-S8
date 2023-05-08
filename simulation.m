@@ -2,11 +2,11 @@ function [signal_recu,signaux,fe] = simulation(n,Tbuffer)
     
 % Signaux numeriques
 % DSSS
-N_1 = 2^10;                                                   % Nombre de bits 
-B_1 = 100e7;                                                  % Largeur de bande du signal
-fe_1 = 50e8;                                                   % Fréquence d'échantillonage
+N_1 = 2^9;                                                   % Nombre de bits 
+fe_1 = 50e6;                                                   % Fréquence d'échantillonage
+B_1 = 1e6;                                                  % Largeur de bande du signal
 roll_off = 0.5;                                               % Facteur de roll-off
-fc_1 = 20*10^4;
+fc_1 = 1e6;
 
 % Signaux analogiques
 % onde FM
@@ -14,9 +14,9 @@ Am=1;
 Fm=1*10^2;
 Ap=1;
 k=0.5;
-Fp_AM=1000e3;
-Fp_FM=150*10^6;
-OSR=4;
+Fp_AM=12.5e6;
+Fp_FM=10e6;
+OSR=2;
 N_2=1000;
 Fs_AM=Fp_AM*2^OSR;
 Fs_FM=Fp_FM*2^OSR;
@@ -36,83 +36,97 @@ fc_2 = Fp_FM;
 fc_3 = Fp_AM;
 
 % Signaux radars
+Fp_RadarPulse=10*10^6;
+fc_4 = Fp_RadarPulse;
+fe_4=Fp_RadarPulse*2^OSR;
+
 % CW
-Te_3 = 4e-9;
-fe_4 = 1/Te_3;
+Te_3 = 2.2e-8;
+fe_5 = floor(1/Te_3);
 T_i = 20e-6;
-T_f = 25e-6;
-Fp_RadarPulse=2*10^9;
-fc_4 = 60*10e5;
+T_f = 100e-6;
+fc_5 = 16e6;
+
 
 % FMCW 
 % Définition des paramètres du signal
-f_4 = 10;     % Fréquence initiale en Hz
-B_4 = 10+250e6; % Bande passante en Hz
-T_4 = 40e-6; % Durée de l'impulsion en secondes
-Te_4 = T_4*1e-5; % Temps d'échantillonage
-fe_5 = 1/Te_4;
-fc_5 = f_4;
+f_4 = 3e6;     % Fréquence initiale en Hz
+B_4 = 1e6; % Bande passante en Hz
+T_4 = 2.5e-6; % Durée de l'impulsion en secondes
+Te_4 = T_4*1e-2; % Temps d'échantillonage
+fe_6 = floor(1/Te_4);
+fc_6 = f_4;
 
 
 %% Signaux
-fe_s = [fe_1, fe_2,fe_3,fe_4,fe_5];
-fc = [fc_1, ones(1,4)* fc_2,ones(1,4)* fc_3,fc_4,fc_5];
+fe_s = [fe_1, fe_2,fe_3,fe_2,fe_4,fe_5,fe_6];
+fc = [fc_1, fc_2,fc_3,fc_2,fc_4,fc_5,fc_6];
 fe = max(fe_s); % Suréchantillonnage
 
 
 %% Génération  des signaux et suréchantillonnage au rythme fe
 
-[signal_1,~,~] = DSSS(N_1,B_1,fe_1,roll_off);                                    % DSSS
-signal_1 = conv(signal_1,synchro(round(fe/fe_s(1))));
-signal_2 = conv(onde_FM(m_FM,Am,Fm,k,p_FM,Ap,Fp_FM,OSR),synchro(round(fe/fe_s(2))));      % FM
-signal_3 = conv(onde_AM(m_AM,Fm,k,p_AM,Ap,Fp_AM,OSR,'DBAP'),synchro(round(fe/fe_s(2))));  % AM
-signal_4 = conv(onde_PM(m_AM,Fm,Am,p_AM,Ap,Fp_FM,OSR,5),synchro(round(fe/fe_s(2))));      % PM
-signal_5 = conv(radar_pulse(100,10000,Fp_RadarPulse,OSR,5),synchro(round(fe/fe_s(2))));
-[signal_6,~] = CW(T_i,T_f, Te_3);                                                % CW
-signal_6 = conv(signal_6,synchro(round(fe/fe_s(3)))) ;                                
-[signal_7,~] = FMCW(T_i,T_f,  Te_4, B_4, f_4);                                   % FMCW
-signal_7= conv(signal_7,synchro(round(fe/fe_s(4))));
+len = Tbuffer * fe;
+time = randi([1, round(len*0.65)], 1, n); % Generer n instants de debuts differents
+PTX = randi([50e5, 65e5],1,n);
+B = fe;
+temperatures = [150, -120];
+idx = randi([1,2]);
+To = temperatures(idx);
+
+% coordonnées émetteur et récepteur
+coord_sat = [randi([500 1000],1), randi([0 360],1), randi([0 90],1)];
+altitude_Tx = randi([0 10],1,n);
+longitude_Tx = randi([0 360],1,n);
+latitude_Tx = randi([0 90],1,n);
+coord_Tx = [altitude_Tx;longitude_Tx;latitude_Tx];
+
+% Puissance des signaux
+for i=1:n
+PRx(i) = Puissance_generator(PTX(i), fc(i),B,coord_sat,coord_Tx(:,i),To);
+end
+PRx(:,1) = PRx(:,1) * 5;
+PRx(:,5) = PRx(:,5) * 10;
+PRx(:,6) = PRx(:,6) * 10;
+
+
+[signal_1,~,~] = DSSS(N_1,B_1,fe_1,roll_off);                                      % DSSS
+[signal_1] = upscale(signal_1,fe,fe_s(1),len, time(1),PRx(1));
+
+signal_2 = onde_FM(m_FM,Am,Fm,k,p_FM,Ap,Fp_FM,OSR);
+signal_2 = upscale(signal_2,fe,fe_s(2),len, time(2),PRx(2));
+
+signal_3 = onde_AM(m_AM,Fm,k,p_AM,Ap,Fp_AM,OSR,'DBAP');                           % AM
+signal_3 = upscale(signal_3,fe,fe_s(3),len, time(3),PRx(3));
+
+signal_4 = onde_PM(m_AM,Fm,Am,p_AM,Ap,Fp_FM,OSR,5);                               % PM
+% signal_4 = upscale(signal_4,fe,fe_s(4),len, time(4),PRx(4));
+
+signal_5 = radar_pulse(100,10000,Fp_RadarPulse,OSR,5);
+signal_5 = upscale(signal_5,fe,fe_s(5),len, time(5),PRx(5));
+
+[signal_6,~] = CW(T_i,T_f, Te_3);                                                  % CW
+signal_6 = upscale(signal_6,fe,fe_s(6),len, time(6),PRx(6));   
+
+[signal_7,~] = FMCW(T_i,T_f,  Te_4, B_4, f_4);                                     % FMCW
+signal_7 = upscale(signal_7,fe,fe_s(7),len, time(7),PRx(7)); 
 
 %% Décalage  de chaque signal par rapport à l'instant de debut et stockage
 % dans les colonnes d'une matrice
 
-len = Tbuffer * fe;
-time = randi([1, round(len*0.65)], 1, n); % Generer n instants de debuts differents
+signaux = zeros(int32(len),n);
+signaux(:,1) = signal_1;
+signaux(:,2) = signal_2;
+signaux(:,3) = signal_3;
+% signaux(:,4) = signal_4;
+signaux(:,5) = signal_5;
+signaux(:,6) = signal_6;
+signaux(:,7) = signal_7;
+% signaux = signaux(1:int32(len),:);
 
-signaux = zeros(int32(len),1);
-signaux(time(1):length(signal_1)+time(1)-1,1) = signal_1;
-signaux(time(2):length(signal_2)+time(2)-1,2) = signal_2;
-signaux(time(3):length(signal_3)+time(3)-1,3) = signal_3;
-signaux(time(4):length(signal_4)+time(4)-1,4) = signal_4;
-signaux(time(5):length(signal_5)+time(5)-1,5) = signal_5;
-signaux(time(6):length(signal_6)+time(6)-1,6) = signal_6;
-signaux(time(7):length(signal_7)+time(7)-1,7) = signal_7;
-signaux = signaux(1:int32(len),:);
-
-
-%% Multiplication de chaque signal par PTX
-PRx = zeros(1,n);
-PTX = randi([50e5, 65e5],1,n);
-B = 2 * fe;
-coord_sat = [randi([500 1000],1), randi([0 360],1), randi([0 90],1)];
-temperatures = [150, -120];
-idx = randi([1,2]);
-To = temperatures(idx);
-coord_terre = zeros(3,n);
-for i=1:n
-%         coord a modifer
-    coord_terre(:,i) = [randi([0 10],1), randi([0 360],1), randi([0 90],1)];
-    PRx(i) = Puissance_generator(PTX(i), fc(i),B,coord_sat,coord_terre(:,i),To);
-end
-signaux = signaux .* PRx;
-signaux(:,5) = 10 * signaux(:,5);
-signaux(:,6) = 10 * signaux(:,6);
     
 %% signal recu
-signal_recu = zeros(int32(len),1);
-for i=1:n
-    signal_recu = signal_recu + signaux(:,i); 
-end
+signal_recu = sum(signaux) ;
 
 end
 

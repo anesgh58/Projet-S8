@@ -35,9 +35,9 @@ end
 % filtre de mise en forme
 sl = conv(ss_spread,g,'same');
    
-% Emission du signal sur frequence porteuse
+% Emission du signal en bande de base
 t = 0:Te:(length(sl)-1)*Te;  
-s = sl .* cos(2*pi*20e5*t);
+s = sl .* cos(2*pi*1e6*t);
 % s = sl;
 
 end
