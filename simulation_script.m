@@ -41,6 +41,9 @@ donnees = identification(spect_binarise,t,f); % Matrice contenant dans sa colonn
 
 [signaux_classifications,signal_low_all,signal_high_all] = filtrage(N,test_signal,B,h_low,h_high,bandwith_signal,i,signal_low_all,signal_high_all);
 
+%% classification
+% Entrée: donnees + signaux_classifications
+
 %% Figures
 
 % Spectrogramme du signal reçu
@@ -63,39 +66,7 @@ figure,pwelch(nonzeros(signal_high_all(:,3)));
 figure,pwelch(nonzeros(signal_low_all(:,3)));
 figure,pwelch(nonzeros(signal_high_all(:,7)));
 
-%% classification
-% [pho_DSSS,Lc_DSSS] = DSSS_detection(signaux(:,1));             % Détection d'un signal DSSS émis seul
-% [pho_est_DSSS,Lc_est_DSSS] = DSSS_detection(filtered_signal);  % Détection d'un signal DSSS 
-% if ( (0.85 * Lc_DSSS  <= Lc_est_DSSS) && (Lc_est_DSSS <= 1.5 * Lc_DSSS))
-%     disp('Modulation detectee: DSSS');
-% end
-% 
-% % figures
-% figure,
-% subplot(1,2,1)
-% plot(pho_DSSS)
-% xlabel('Échantillons')
-% ylabel('Amplitude')
-% title("Détection d'un signal DSSS émis seul")
-% 
-% subplot(1,2,2)
-% plot(pho_est_DSSS)
-% xlabel('Échantillons')
-% ylabel('Amplitude')
-% title("Détection d'un signal DSSS au sein du signal d'enregistrement")
-% 
-% figure,
-% subplot(1,2,1)
-% plot(signaux(:,1))
-% xlabel('Temps')
-% ylabel('Amplitude')
-% title("Évolution temporel du signal DSSS émis seul")
-% 
-% subplot(1,2,2)
-% plot(filtered_signal)
-% xlabel('Temps')
-% ylabel('Amplitude')
-% title("Évolution temporel du signal DSSS après filtrage")
+
 
 
 
