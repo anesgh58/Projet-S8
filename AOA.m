@@ -112,7 +112,7 @@ end
 % Création de la carte
 figure,
 geoplot(0,0) % carte du monde
-%geolimits([47 50],[1 4]) % limites de la carte
+%geolimits([42 52],[-2 7]) % limites de la carte
 % Ajout des points sur la carte
 hold on, 
 geoscatter(lat(1),lon(1), 'x','LineWidth',1.5) % deuxième point en rouge
@@ -121,4 +121,5 @@ geoscatter(lat(3),lon(3), 'x','LineWidth',1.5) % deuxième point en rouge
 geoscatter(46.1603 ,2.6492 , '.','LineWidth',1.5) % premier point en bleu
 % Légende
 legend('','Signal 1', 'Signal 2', 'Signal 3', 'Position du satellite')
-geobasemap streets % fond de carte
+geobasemap streets-light
+% fond de carte
