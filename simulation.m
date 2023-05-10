@@ -1,12 +1,14 @@
 function [signal_recu,signaux,fe] = simulation(n,Tbuffer)
-    
+
+%% Parametres
+
 % Signaux numeriques
 % DSSS
-N_1 = 2^9;                                                   % Nombre de bits 
-fe_1 = 50e6;                                                   % Fréquence d'échantillonage
-B_1 = 1e6;                                                  % Largeur de bande du signal
-roll_off = 0.5;                                               % Facteur de roll-off
-fc_1 = 1e6;
+N_1 = 2^9;      % Nombre de bits 
+fe_1 = 50e6;    % Fréquence d'échantillonage
+B_1 = 1e6;      % Largeur de bande du signal
+roll_off = 0.5; % Facteur de roll-off
+fc_1 = 1e6;     % Fréquence de porteuse
 
 % Signaux analogiques
 
@@ -24,7 +26,7 @@ Ti_2 = 80e-3;
 Te_2 = 1/fe_2; % Temps d'échantillonage
 fc_2 = Fp_FM;
 
-% onde AM
+% Onde AM
 Fp_AM=12.5e6;
 fe_3=4*Fp_AM;
 Tf_3 = 75e-3;
@@ -32,7 +34,7 @@ Ti_3 = 50e-3;
 Te_3 = 1/fe_3; % Temps d'échantillonage
 fc_3 = Fp_AM;
 
-%Onde PM
+% Onde PM
 kf=5;
 Fp_PM=10e6;
 fe_4=4*Fp_PM;
@@ -41,8 +43,8 @@ Ti_4 = 150e-3;
 Te_4 = 1/fe_4; % Temps d'échantillonage
 fc_4 = Fp_PM;
 
-%Signaux radars
-%Radar à pulsation
+% Signaux radars
+% Radar à pulsation
 Fp_RadarPulse=10*10^6;
 fe_5=4*Fp_RadarPulse;
 durpulse=10e-3;
@@ -68,65 +70,55 @@ Te_7 = T_7*1e-2; % Temps d'échantillonage
 fe_7 = floor(1/Te_4);
 fc_7 = f_7;
 
-
-%% Signaux
-
 fe_s = [fe_1, fe_2,fe_3,fe_2,fe_4,fe_5,fe_6,fe_7];
 fc = [fc_1, fc_2,fc_3,fc_2,fc_4,fc_5,fc_6,fc_7];
-fe = 50e6; % Suréchantillonnage
-
-%% Génération  des signaux et suréchantillonnage au rythme fe
-
-len = Tbuffer * fe;
-time = randi([1, round(len*0.3)], 1, n); % Generer n instants de debuts differents
-PTX = randi([60e5, 65e5],1,n);
-B = fe;
-temperatures = [150, -120];
+fe = 50e6;                               % fréquence d'échantillonnage
+len = Tbuffer * fe;                      % durée du signal d'enregistrement (en nombre d'échantillons)
+time = randi([1, round(len*0.3)], 1, n); % Temps d'émission
+PTX = randi([60e5, 65e5],1,n);           % Puissance d'émission
+B = fe;                                  % Bande passante en bande de base
+temperatures = [150, -120];              % Température de surface du satellite
 idx = randi([1,2]);
-To = temperatures(idx);
+To = temperatures(idx);                  % Choix de le température
 
-% coordonnées émetteur et récepteur
+% coordonnées des émetteurs et récepteur
 coord_sat = [randi([500 1000],1), randi([0 360],1), randi([0 90],1)];
 altitude_Tx = randi([0 10],1,n);
 longitude_Tx = randi([0 360],1,n);
 latitude_Tx = randi([0 90],1,n);
 coord_Tx = [altitude_Tx;longitude_Tx;latitude_Tx];
 
-% Puissance des signaux
+% Puissance de réception des signaux
 for i=1:n
 PRx(i) = Puissance_generator(PTX(i), fc(i),B,coord_sat,coord_Tx(:,i),To);
 end
 PRx(:,1) = PRx(:,1) * 5;
 PRx(:,5) = PRx(:,5) * 10;
-PRx(:,6) = PRx(:,6) * 10;
 
+%% Génération  des signaux et suréchantillonnage au rythme fe
 
-[signal_1,~,~] = DSSS(N_1,B_1,fe_1,roll_off);                                      % DSSS
+[signal_1,~,~] = DSSS(N_1,B_1,fe_1,roll_off);                           % DSSS
 [signal_1] = upscale(signal_1,fe,fe_s(1),len, time(1),PRx(1));
 
 signal_2 = onde_FM(Am,Fm,k,Ap,Fp_FM,Ti_2,Tf_2,Te_2);
 signal_2 = upscale(signal_2,fe,fe_s(2),len, time(2),PRx(2));
 
-signal_3 = onde_AM(Fm,Am,k,Fp_AM,Ap,Tf_3,Ti_3,Te_3,'DBAP');                           % AM
+signal_3 = onde_AM(Fm,Am,k,Fp_AM,Ap,Tf_3,Ti_3,Te_3,'DBAP');              % AM
 signal_3 = upscale(signal_3,fe,fe_s(3),len, time(3),PRx(3));
 
-signal_4 = onde_PM(Fm,Am,Ap,Fp_PM,Tf_4,Ti_4,Te_4,kf);                               % PM
+signal_4 = onde_PM(Fm,Am,Ap,Fp_PM,Tf_4,Ti_4,Te_4,kf);                    % PM
 signal_4 = upscale(signal_4,fe,fe_s(4),len, time(4),PRx(4));
 
 signal_5 = radar_pulse(durpulse,durect,Tf_5,Ti_5,Te_5,Fp_RadarPulse);
 signal_5 = upscale(signal_5,fe,fe_s(5),len, time(5),PRx(5));
 
-[signal_6,~] = CW(T_i,T_f, Te_6);                                                  % CW
+[signal_6,~] = CW(T_i,T_f, Te_6);                                        % CW
 signal_6 = upscale(signal_6,fe,fe_s(6),len, time(6),PRx(6));   
 
-[signal_7,~] = FMCW(T_i,T_f,  Te_7, B_7, f_7);                                     % FMCW
+[signal_7,~] = FMCW(T_i,T_f,  Te_7, B_7, f_7);                           % FMCW
 signal_7 = upscale(signal_7,fe,fe_s(7),len, time(7),PRx(7)); 
 
-
-
-%% Décalage  de chaque signal par rapport à l'instant de debut et stockage
-% dans les colonnes d'une matrice
-
+%% Stockage des signaux générés dans une matrice
 signaux = zeros(int32(len),n);
 signaux(:,1) = signal_1;
 signaux(:,2) = signal_2;
@@ -135,9 +127,7 @@ signaux(:,4) = signal_4;
 signaux(:,5) = signal_5;
 signaux(:,6) = signal_6;
 signaux(:,7) = signal_7;
-signaux = signaux(1:int32(len),:);
-
-    
+  
 %% signal recu
 signal_recu = sum(signaux) ;
 
