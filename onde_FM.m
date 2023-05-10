@@ -14,7 +14,6 @@ t = Ti:Te:Tf; % Vecteur de temps
 m=Am*cos(2*pi*Fm*t);
 %Porteuse
 p=Ap*cos(2*pi*Fp*t);
-
 Fi=Fp+k*m;
 deltaf=Fi*Am;
 beta=deltaf/Fm;

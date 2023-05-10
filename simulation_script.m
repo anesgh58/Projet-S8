@@ -11,14 +11,14 @@ bruit = randn(1,round(Tbuffer*fe));
 %% spectrogramme
 % Définition des paramètres du spectrogramme
 window_length = round( (length(signaux(:,4)) ) /100); % Longueur de la fenêtre
-noverlap = round(window_length/2);               % Chevauchement des fenêtres
-test_signal = signaux(:,1) + signaux(:,6) + signaux(:,7)  ;
+noverlap = round(window_length/2);                    % Chevauchement des fenêtres
+test_signal = awgn(signaux(:,2),100);
 [spect,f,t,pxx] = spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
 spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
 title('Spectrogramme du signal reçu')
 
 %% Binarisation
-spect_binarise = pow2db(pxx)<70;
+spect_binarise = pow2db(pxx)>70;
 
 figure,
 imagesc(t,f,spect_binarise)
@@ -29,16 +29,15 @@ ylabel('Frequency (Hz)');
 colorbar;
 title('Spectrogramme du signal binarisé')
 
+%% Identification des temps d'émission,temps de réception et fréquences porteuses
+
+[f_p,t_emission,t_reception] = identification(spect_binarise,t,f);
+
 %% filtrage (filtre PB et PH + decimation)
 
 N = 50;
 h_low = fir1(N,1/2,'low',hamming(N+1));
 h_high = fir1(N,1/2,'high',hamming(N+1));
-
-bandwith_signal = 0.2e6/2.5e6;
-B =1;
-i =1;
-
 bandwith_signal = 0.6e6/25e6;
 B=1;
 i=1;
