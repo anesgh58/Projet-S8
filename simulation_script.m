@@ -26,23 +26,23 @@ signal_high_all = [];                      % Ensemble des signaux après filtrag
 
 window_length = round((fe*Tbuffer)/100);                                             % Longueur de la fenêtre
 noverlap = round(window_length/2);                                                   % Chevauchement des fenêtres
-test_signal = awgn(signaux(:,1)+signaux(:,6)+signaux(:,7),100) ;
+test_signal = signaux(:,2) ;
 [spect,f,t,pxx] = spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
 
 %% Binarisation
 spect_binarise = pow2db(pxx)>seuil;
 
 %% Identification des temps d'émission,temps de réception et fréquences porteuses
-
 donnees = identification(spect_binarise,t,f); % Matrice contenant dans sa colonne la fréquence porteuse fp, temps d'émission Tx et temps de réception Tr. 
 
-
 %% filtrage (filtre PB et PH + décimation)
-
 [signaux_classifications,signal_low_all,signal_high_all] = filtrage(N,test_signal,B,h_low,h_high,bandwith_signal,i,signal_low_all,signal_high_all);
 
 %% classification
-% Entrée: donnees + signaux_classifications
+% Entrées: donnees + signaux_classifications
+
+%% AOA
+
 
 %% Figures
 
@@ -66,8 +66,58 @@ figure,pwelch(nonzeros(signal_high_all(:,3)));
 figure,pwelch(nonzeros(signal_low_all(:,3)));
 figure,pwelch(nonzeros(signal_high_all(:,7)));
 
+figure,
+subplot(1,2,1)
+plot(nonzeros(signaux(:,1)))
+xlim([0, 1500]);
+title('Signal DSSS émis seul')
+axis xy;
+xlabel('Temps (s)');
+ylabel('Amplitude ');
+
+subplot(1,2,2)
+plot(nonzeros(signal_low_all(:,3)))
+% xlim([720, 920]);
+title('Signal DSSS obtenu après filtrage')
+axis xy;
+xlabel('Temps (s)');
+ylabel('Amplitude ');
+
+
+figure,
+subplot(1,2,1)
+plot(nonzeros(signaux(:,7)))
+title('Signal FMCW émis seul')
+xlim([0 120])
+axis xy;
+xlabel('Temps (s)');
+ylabel('Amplitude ');
+
+subplot(1,2,2)
+plot(nonzeros(signal_high_all(:,3)))
+% xlim([900 950])
+title('Signal FMCW obtenu après filtrage')
+axis xy;
+xlabel('Temps (s)');
+ylabel('Amplitude ');
 
 
 
+figure,
+subplot(1,2,1)
+plot(nonzeros(signaux(:,6)))
+title('Signal CW émis seul')
+xlim([2750, 2850])
+axis xy;
+xlabel('Temps (s)');
+ylabel('Amplitude ');
+
+subplot(1,2,2)
+plot(nonzeros(signal_high_all(:,7)))
+% xlim([350, 500])
+title('Signal CW obtenu après filtrage')
+axis xy;
+xlabel('Temps (s)');
+ylabel('Amplitude ');
 
 
