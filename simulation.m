@@ -19,8 +19,8 @@ Ap=1;
 k=0.5;
 
 %Onde FM
-Fp_FM=10e6;
-fe_2=2*Fp_FM;
+Fp_FM=3.5e6;
+fe_2=4*Fp_FM;
 Tf_2 = 120e-3;
 Ti_2 = 80e-3;
 Te_2 = 1/fe_2; % Temps d'échantillonage
@@ -84,8 +84,8 @@ To = temperatures(idx);                  % Choix de le température
 % coordonnées des émetteurs et récepteur
 coord_sat = [550000 46.103 2.6492];
 altitude_Tx = randi([0 500],1,n);
-longitude_Tx = randi([-2.6492 7.5484],1,n);
-latitude_Tx = randi([42.1603 51.2509],1,n);
+longitude_Tx = randi([0 7],1,n);
+latitude_Tx = randi([42 51],1,n);
 coord_Tx = [altitude_Tx;longitude_Tx;latitude_Tx];
 
 % Puissance de réception des signaux
@@ -101,6 +101,9 @@ PRx(:,5) = PRx(:,5) * 10;
 [signal_1] = upscale(signal_1,fe,fe_s(1),len, time(1),PRx(1));
 
 signal_2 = onde_FM(Am,Fm,k,Ap,Fp_FM,Ti_2,Tf_2,Te_2);
+N = 50;
+h_pass = fir1(N,0.2,'low',hamming(N+1));    % Filtre passe bas
+signal_2 = conv(signal_2,h_pass);
 signal_2 = upscale(signal_2,fe,fe_s(2),len, time(2),PRx(2));
 
 signal_3 = onde_AM(Fm,Am,k,Fp_AM,Ap,Tf_3,Ti_3,Te_3,'DBAP');              % AM
