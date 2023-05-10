@@ -82,10 +82,10 @@ idx = randi([1,2]);
 To = temperatures(idx);                  % Choix de le température
 
 % coordonnées des émetteurs et récepteur
-coord_sat = [randi([500 1000],1), randi([0 360],1), randi([0 90],1)];
-altitude_Tx = randi([0 10],1,n);
-longitude_Tx = randi([0 360],1,n);
-latitude_Tx = randi([0 90],1,n);
+coord_sat = [550000 46.103 2.6492];
+altitude_Tx = randi([0 500],1,n);
+longitude_Tx = randi([-2.6492 7.5484],1,n);
+latitude_Tx = randi([42.1603 51.2509],1,n);
 coord_Tx = [altitude_Tx;longitude_Tx;latitude_Tx];
 
 % Puissance de réception des signaux
