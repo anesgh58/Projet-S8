@@ -12,7 +12,7 @@ bruit = randn(1,round(Tbuffer*fe));
 % Définition des paramètres du spectrogramme
 window_length = round( (length(signaux(:,4)) ) /100); % Longueur de la fenêtre
 noverlap = round(window_length/2);                    % Chevauchement des fenêtres
-test_signal = awgn(signaux(:,1) + signaux(:,6) + signaux(:,7),100) ;
+test_signal = awgn(signaux(:,2),100) ;
 [spect,f,t,pxx] = spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
 spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
 title('Spectrogramme du signal reçu')
