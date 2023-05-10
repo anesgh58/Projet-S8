@@ -1,4 +1,4 @@
-function [s] = onde_AM(m,Fm,k,p,Ap,Fp,OSR,type)
+function [s] = onde_AM(Fm,Am,k,Fp_AM,Ap,Tf,Ti,Te,type)
 
 %m: Modulant
 %k: Taux de modulation, utile que pour DBAP
@@ -9,11 +9,14 @@ function [s] = onde_AM(m,Fm,k,p,Ap,Fp,OSR,type)
 %type: DBSP, DBAP et BLU
 %Fm: Fréquence modulant
 
-N=1000;
-Fs=Fp*2^OSR;
-Ts=1/Fs;
-t= (0:Ts:(N-1)*Ts);
-Tsm=1/Fm;
+
+T = Tf - Ti;  % Durée du signal
+t = Ti:Te:Tf; % Vecteur de temps
+
+%Modulation
+m=Am*cos(2*pi*Fm*t);
+%Porteuse
+p=Ap*cos(2*pi*Fp_AM*t);
 if strcmp(type,"DBSP")
     s=p.*m;
 end
@@ -48,25 +51,25 @@ end
 % 
 % 
 % %% Affichage
-% 
+
 % figure,
 % subplot(3,1,1);
 % plot(t,p);
 % xlabel('Temps');
-% xlim([0 3*Tsm]);
+% xlim([Ti Ti+Te*200]);
 % title('Représentation de la porteuse');
 % grid on;
 % 
 % subplot(3,1,2);
 % plot(t,m);
 % xlabel('Temps');
-% xlim([0 3*Tsm]);
+% xlim([Ti Ti+T]);
 % title('Représentation du modulant');
 % grid on;
 % 
 % subplot(3,1,3);
 % plot(t,s);
-% xlim([0 3*Tsm]);
+% xlim([Ti Ti+Te*200]);
 % xlabel('Temps');
 % title('Représentation du signal modulé en amplitude')
 % grid on;

@@ -1,4 +1,4 @@
-function [s] = onde_PM(m,Fm,Am,p,Ap,Fp,OSR,kf)
+function [s] = onde_PM(Fm,Am,Ap,Fp,Tf,Ti,Te,kf)
 
 %m: Modulant
 %Ap: Amplitude porteuse
@@ -9,11 +9,13 @@ function [s] = onde_PM(m,Fm,Am,p,Ap,Fp,OSR,kf)
 %OSR: Ratio de dépassement
 %kf
 
-N=10000;
-Fs=Fp*2^OSR;
-Ts=1/Fs;
-t= (0:N-1)*Ts;
-Tsm=1/Fm;
+T = Tf - Ti;  % Durée du signal
+t = Ti:Te:Tf; % Vecteur de temps
+% t = t(1:length(t)-1);
+%Modulation
+m=Am*cos(2*pi*Fm*t);
+%Porteuse
+p=Ap*cos(2*pi*Fp*t);
 beta=(kf*Am)/Fm;
 
 % Calcul de la modulation de phase PM
@@ -45,20 +47,20 @@ s = Ap.*cos(2*pi*Fp*t + beta*sin(2*pi*Fm*t));
 % subplot(3,1,1);
 % plot(t,p);
 % xlabel('Temps');
-% xlim([0 3*Tsm]);
+% xlim([Ti Ti+Te*200]);
 % title('Représentation de la porteuse');
 % grid on;
 % 
 % subplot(3,1,2);
 % plot(t,m);
 % xlabel('Temps');
-% xlim([0 3*Tsm]);
+% xlim([Ti Ti+T]);
 % title('Représentation du modulant');
 % grid on;
 % 
 % subplot(3,1,3);
 % plot(t,s);
-% xlim([0 3*Tsm]);
+% xlim([Ti Ti+Te*200]);
 % xlabel('Temps');
-% title('Représentation du signal modulé en phase')
+% title('Représentation du signal modulé en amplitude')
 % grid on;
