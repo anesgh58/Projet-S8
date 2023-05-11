@@ -26,7 +26,7 @@ signal_high_all = [];                      % Ensemble des signaux après filtrag
 
 window_length = round((fe*Tbuffer)/100);                                             % Longueur de la fenêtre
 noverlap = round(window_length/2);                                                   % Chevauchement des fenêtres
-test_signal = signaux(:,2) ;
+test_signal = signal_recu ;
 [spect,f,t,pxx] = spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
 
 %% Binarisation
@@ -42,6 +42,8 @@ donnees = identification(spect_binarise,t,f); % Matrice contenant dans sa colonn
 % Entrées: donnees + signaux_classifications
 
 %% AOA
+
+% [lon, lat] = AOA_function(A1,A2,A3, d);
 
 
 %% Figures
@@ -61,63 +63,73 @@ colorbar;
 title('Spectrogramme du signal binarisé')
 
 % filtrage (filtre PB et PH + décimation)
-figure,pwelch(nonzeros(signal_low_all(:,1)));
-figure,pwelch(nonzeros(signal_high_all(:,3)));
-figure,pwelch(nonzeros(signal_low_all(:,3)));
-figure,pwelch(nonzeros(signal_high_all(:,7)));
+figure,pwelch(nonzeros(signaux_classifications(:,3)));
+title('signal 1: DSSS')
+figure,pwelch(nonzeros(signaux_classifications(:,2)));
+title('signal 2: FM')
+figure,pwelch(nonzeros(signaux_classifications(:,4)));
+title('signal 3: AM')
+figure,pwelch(nonzeros(signaux_classifications(:,1)));
+title('signal 4: PM')
+figure,pwelch(nonzeros(signaux_classifications(:,8)));
+title('signal 5: Radar Pulse')
+figure,pwelch(nonzeros(signaux_classifications(:,5)));
+title('signal 6: CW')
+figure,pwelch(nonzeros(signaux_classifications(:,7)));
+title('signal 7: FMCW')
 
-figure,
-subplot(1,2,1)
-plot(nonzeros(signaux(:,1)))
-xlim([0, 1500]);
-title('Signal DSSS émis seul')
-axis xy;
-xlabel('Temps (s)');
-ylabel('Amplitude ');
+% figure,
+% subplot(1,2,1)
+% plot(nonzeros(signaux(:,1)))
+% xlim([0, 1500]);
+% title('Signal DSSS émis seul')
+% axis xy;
+% xlabel('Temps (s)');
+% ylabel('Amplitude ');
 
-subplot(1,2,2)
-plot(nonzeros(signal_low_all(:,3)))
-% xlim([720, 920]);
-title('Signal DSSS obtenu après filtrage')
-axis xy;
-xlabel('Temps (s)');
-ylabel('Amplitude ');
-
-
-figure,
-subplot(1,2,1)
-plot(nonzeros(signaux(:,7)))
-title('Signal FMCW émis seul')
-xlim([0 120])
-axis xy;
-xlabel('Temps (s)');
-ylabel('Amplitude ');
-
-subplot(1,2,2)
-plot(nonzeros(signal_high_all(:,3)))
-% xlim([900 950])
-title('Signal FMCW obtenu après filtrage')
-axis xy;
-xlabel('Temps (s)');
-ylabel('Amplitude ');
-
-
-
-figure,
-subplot(1,2,1)
-plot(nonzeros(signaux(:,6)))
-title('Signal CW émis seul')
-xlim([2750, 2850])
-axis xy;
-xlabel('Temps (s)');
-ylabel('Amplitude ');
-
-subplot(1,2,2)
-plot(nonzeros(signal_high_all(:,7)))
-% xlim([350, 500])
-title('Signal CW obtenu après filtrage')
-axis xy;
-xlabel('Temps (s)');
-ylabel('Amplitude ');
+% subplot(1,2,2)
+% plot(nonzeros(signal_low_all(:,3)))
+% % xlim([720, 920]);
+% title('Signal DSSS obtenu après filtrage')
+% axis xy;
+% xlabel('Temps (s)');
+% ylabel('Amplitude ');
+% 
+% 
+% figure,
+% subplot(1,2,1)
+% plot(nonzeros(signaux(:,7)))
+% title('Signal FMCW émis seul')
+% xlim([0 120])
+% axis xy;
+% xlabel('Temps (s)');
+% ylabel('Amplitude ');
+% 
+% subplot(1,2,2)
+% plot(nonzeros(signal_high_all(:,3)))
+% % xlim([900 950])
+% title('Signal FMCW obtenu après filtrage')
+% axis xy;
+% xlabel('Temps (s)');
+% ylabel('Amplitude ');
+% 
+% 
+% 
+% figure,
+% subplot(1,2,1)
+% plot(nonzeros(signaux(:,6)))
+% title('Signal CW émis seul')
+% xlim([2750, 2850])
+% axis xy;
+% xlabel('Temps (s)');
+% ylabel('Amplitude ');
+% 
+% subplot(1,2,2)
+% plot(nonzeros(signal_high_all(:,7)))
+% % xlim([350, 500])
+% title('Signal CW obtenu après filtrage')
+% axis xy;
+% xlabel('Temps (s)');
+% ylabel('Amplitude ');
 
 

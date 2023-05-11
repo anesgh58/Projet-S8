@@ -1,4 +1,4 @@
-function [s,ss,ss_spread] = DSSS(N,B,fe,roll_off)
+function [s,ss,ss_spread] = DSSS(N,B,fe,roll_off,f)
 
 %% Parametres
 nb = 1;                                                       % Nombre de bit/symbole (BPSK)
@@ -37,7 +37,7 @@ sl = conv(ss_spread,g,'same');
    
 % Emission du signal en bande de base
 t = 0:Te:(length(sl)-1)*Te;  
-s = sl .* cos(2*pi*1e6*t);
+s = sl .* cos(2*pi*f*t);
 % s = sl;
 
 end
