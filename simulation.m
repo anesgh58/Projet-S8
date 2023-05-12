@@ -159,8 +159,8 @@ signaux(:,4) = signal_4;
 signaux(:,5) = signal_5;
 signaux(:,6) = signal_6;
 signaux(:,7) = signal_7;
-signaux(:,8) = signal_8;
-signaux(:,9) = signal_9; 
+% signaux(:,8) = signal_8;
+% signaux(:,9) = signal_9; 
 %% signal recu
 signal_recu = zeros(int32(len),1);
 for i=1:n
