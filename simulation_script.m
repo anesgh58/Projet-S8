@@ -26,7 +26,7 @@ signal_high_all = [];                      % Ensemble des signaux après filtrag
 
 window_length = round((fe*Tbuffer)/100);                                             % Longueur de la fenêtre
 noverlap = round(window_length/2);                                                   % Chevauchement des fenêtres
-test_signal = signal_recu ;
+test_signal = awgn(signal_recu,30) ;
 [spect,f,t,pxx] = spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
 
 %% Binarisation
