@@ -10,6 +10,23 @@ B_1 = 0.5e6;      % Largeur de bande du signal
 roll_off = 0.5; % Facteur de roll-off
 fc_1 = 11e6;     % Fréquence de porteuse
 
+% Paramètres du signal GFSK
+fc_8 = 23e6  ; % fréquence porteuse fc 
+fe_8 = 50e6 ; % fréquence d'échantillonnage
+Te_8 = 1/fe_8 ; % période d'échantillonnage
+N = 15    ; 
+B_8 = 2e6   ;
+Ti_8 = 2    ;
+Tf_8 = 2.001  ;    
+
+
+% Paramètres du signal FHSS 
+fc_9 = 20e6; % fréquence porteuse
+fe_9 = 50e6 ; % fréquence d'échantillonnage
+B_9 = 2e6 ;
+Ti_9 = 2.001  ;
+Tf_9 = 2.002  ;
+
 % Signaux analogiques
 
 %Donnees modulant
@@ -17,6 +34,7 @@ Am=1;
 Fm=1*10^2;
 Ap=1;
 k=0.5;
+
 
 %Onde FM
 Fp_FM=2e6;
@@ -70,8 +88,8 @@ Te_7 = T_7*1e-2; % Temps d'échantillonage
 fe_7 = floor(1/Te_4);
 fc_7 = f_7;
 
-fe_s = [fe_1, fe_2,fe_3,fe_2,fe_4,fe_5,fe_6,fe_7];
-fc = [fc_1, fc_2,fc_3,fc_2,fc_4,fc_5,fc_6,fc_7];
+fe_s = [fe_1, fe_2,fe_3,fe_2,fe_4,fe_5,fe_6,fe_7,fe_8,fe_9];
+fc   = [fc_1, fc_2,fc_3,fc_2,fc_4,fc_5,fc_6,fc_7,fc_8,fc_9];
 fe = 50e6;                               % fréquence d'échantillonnage
 len = Tbuffer * fe;                      % durée du signal d'enregistrement (en nombre d'échantillons)
 time = randi([1, round(len*0.3)], 1, n); % Temps d'émission
@@ -126,6 +144,12 @@ signal_6 = upscale(signal_6,fe,fe_s(6),len, time(6),PRx(6));
 [signal_7,~] = FMCW(T_i,T_f,  Te_7, B_7, f_7);                           % FMCW
 signal_7 = upscale(signal_7,fe,fe_s(7),len, time(7),PRx(7)); 
 
+signal_8 = GFSK(Ti_8, Tf_8, fe_8, fc_8, N, B_8) ;                    % GFSK
+signal_8 = upscale(signal_8,fe,fe_s(8),len, time(8),PRx(7));
+
+signal_9 = FHSS(Ti_9, Tf_9, fc_9, fe_9, B_9) ;                           % FHSS
+signal_9 = upscale(signal_9,fe,fe_s(9),len, time(9),PRx(7));
+
 %% Stockage des signaux générés dans une matrice
 signaux = zeros(int32(len),n);
 signaux(:,1) = signal_1;
@@ -135,7 +159,8 @@ signaux(:,4) = signal_4;
 signaux(:,5) = signal_5;
 signaux(:,6) = signal_6;
 signaux(:,7) = signal_7;
-  
+signaux(:,8) = signal_8;
+signaux(:,9) = signal_9; 
 %% signal recu
 signal_recu = zeros(int32(len),1);
 for i=1:n

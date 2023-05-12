@@ -4,7 +4,7 @@ clc;
 
 %% Paramètres
 
-n=7;                                      % Nombre de signaux à générer
+n=9;                                      % Nombre de signaux à générer
 Tbuffer = 500e-6;                         % Durée du signal d'enregistrement (en secondes)
 seuil = 70;                               % Seuil énergétique
 
