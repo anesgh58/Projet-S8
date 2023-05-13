@@ -1,4 +1,4 @@
-function [signal_recu,signaux,fe] = simulation(n,Tbuffer)
+function [signal_recu,signaux,fe, coord_sat, coord_Tx] = simulation(n,Tbuffer)
 
 %% Parametres
 
@@ -82,15 +82,17 @@ idx = randi([1,2]);
 To = temperatures(idx);                  % Choix de le température
 
 % coordonnées des émetteurs et récepteur
-coord_sat = [550000 46.103 2.6492];
+coord_sat = [550000 46 2];
 altitude_Tx = randi([0 500],1,n);
-longitude_Tx = randi([0 7],1,n);
-latitude_Tx = randi([42 51],1,n);
-coord_Tx = [altitude_Tx;longitude_Tx;latitude_Tx];
+longitude_Tx = randi([1 30],1,n);
+longitude_Tx = longitude_Tx/10;
+latitude_Tx = randi([450 460],1,n);
+latitude_Tx = latitude_Tx/10;
+coord_Tx = [latitude_Tx;longitude_Tx;altitude_Tx];
 
 % Puissance de réception des signaux
 for i=1:n
-PRx(i) = Puissance_generator(PTX(i), fc(i),B,coord_sat,coord_Tx(:,i),To);
+    PRx(i) = Puissance_generator(PTX(i), fc(i),B,coord_sat,coord_Tx(:,i),To);
 end
 PRx(:,1) = PRx(:,1) * 10;
 PRx(:,2) = PRx(:,2) * 20;
