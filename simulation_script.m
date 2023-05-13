@@ -4,7 +4,7 @@ clc;
 
 %% Paramètres
 
-n=7;                                      % Nombre de signaux à générer
+n=9;                                      % Nombre de signaux à générer
 Tbuffer = 500e-6;                         % Durée du signal d'enregistrement (en secondes)
 seuil = 70;                               % Seuil énergétique
 
@@ -30,9 +30,9 @@ while d ~= ns
     test_signal = signal_recu ;
     [spect,f,t,pxx] = spectrogram(test_signal, window_length, noverlap, [], fe, 'yaxis');
 
+
     %% Binarisation
     spect_binarise = pow2db(pxx)>seuil;
-
     %% Identification des temps d'émission,temps de réception et fréquences porteuses
     donnees = identification(spect_binarise,t,f); % Matrice contenant dans sa colonne la fréquence porteuse fp, temps d'émission Tx et temps de réception Tr. 
     [~, d] = size(donnees);
