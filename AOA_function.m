@@ -72,7 +72,7 @@ for k = K
             lon(i) = atan2(y_p, x_p) * 180/pi; % longitude (en degrés)
             alt(i) = sqrt(x_p^2 + y_p^2 + z_p^2) - R; % altitude au-dessus du niveau de la mer (en mètres)
 
-        if (abs(coord_Tx(i,1) - lat(i)) < 0.4) && (abs(coord_Tx(i,2) - lon(i)) < 0.4)
+        if (abs(coord_Tx(i,1) - lat(i)) < 0.2) && (abs(coord_Tx(i,2) - lon(i)) < 0.2)
             
             lati(i) = lat(i);
             longi(i) = lon(i);

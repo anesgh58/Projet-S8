@@ -146,11 +146,11 @@ signal_6 = upscale(signal_6,fe,fe_s(6),len, time(6),PRx(6));
 [signal_7,~] = FMCW(T_i,T_f,  Te_7, B_7, f_7);                           % FMCW
 signal_7 = upscale(signal_7,fe,fe_s(7),len, time(7),PRx(7)); 
 
-signal_8 = GFSK(Ti_8, Tf_8, fe_8, fc_8, N, B_8) ;                    % GFSK
-signal_8 = upscale(signal_8,fe,fe_s(8),len, time(8),PRx(7));
-
-signal_9 = FHSS(Ti_9, Tf_9, fc_9, fe_9, B_9) ;                           % FHSS
-signal_9 = upscale(signal_9,fe,fe_s(9),len, time(9),PRx(7));
+% signal_8 = GFSK(Ti_8, Tf_8, fe_8, fc_8, N, B_8) ;                    % GFSK
+% signal_8 = upscale(signal_8,fe,fe_s(8),len, time(8),PRx(7));
+% 
+% signal_9 = FHSS(Ti_9, Tf_9, fc_9, fe_9, B_9) ;                           % FHSS
+% signal_9 = upscale(signal_9,fe,fe_s(9),len, time(9),PRx(7));
 
 %% Stockage des signaux générés dans une matrice
 signaux = zeros(int32(len),n);

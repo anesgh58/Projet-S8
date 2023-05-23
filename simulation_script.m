@@ -4,7 +4,7 @@ clc;
 
 %% Paramètres
 
-n=9;                                      % Nombre de signaux à générer
+n=7;                                      % Nombre de signaux à générer
 Tbuffer = 500e-6;                         % Durée du signal d'enregistrement (en secondes)
 seuil = 70;                               % Seuil énergétique
 
@@ -20,7 +20,9 @@ signal_high_all = [];                      % Ensemble des signaux après filtrag
 %%
 ns = 1;
 d = 0;
-while d ~= ns
+lati = 0;
+while sum(lati~=0)<4
+while (d ~= ns) 
     %% Génération  du stimuli
     [signal_recu,signaux,fe,coord_sat, coord_Tx] = simulation(n,Tbuffer); % Génération du stimuli
     [~, ns] = size(signaux);
@@ -37,8 +39,10 @@ while d ~= ns
     donnees = identification(spect_binarise,t,f); % Matrice contenant dans sa colonne la fréquence porteuse fp, temps d'émission Tx et temps de réception Tr. 
     [~, d] = size(donnees);
 end
+d
+ns
 %% filtrage (filtre PB et PH + décimation)
-[signaux_classifications,signal_low_all,signal_high_all] = filtrage(N,test_signal,B,h_low,h_high,bandwith_signal,i,signal_low_all,signal_high_all);
+%[signaux_classifications,signal_low_all,signal_high_all] = filtrage(N,test_signal,B,h_low,h_high,bandwith_signal,i,signal_low_all,signal_high_all);
 
 %% classification
 
@@ -50,7 +54,7 @@ Rx3 = [46, 2.000006, 550000];
 Rx = [Rx1;Rx2;Rx3];
 coord_Tx = coord_Tx';
 %% Estimation du temps de réception
-vitesse_propagation = 299792458; % mètres par seconde
+vitesse_propagation = 3e8; % mètres par seconde
 temps_reception = zeros(length(coord_Tx), 3);
 for j = 1:3
     for i = 1:length(coord_Tx)
@@ -72,15 +76,36 @@ A3(:,3) = temps_reception(:,3);
 d = [distance_geodesique(Rx1,Rx2) distance_geodesique(Rx1,Rx3)];
 c = 3e8;
 [longi, lati, teta, gama] = AOA_function(A1,A2,A3, d, c, coord_Tx);
+sum(lati~=0)
+end
+%%
+figure, 
+colors = colormap(lines(12));
+%polarplot(0, 0 ,'kx','LineWidth',1.5);
+
+for i = 1:length(teta)
+    color_index = mod(i-1, 12)+1; % Choix de la couleur en fonction de l'indice de la boucle
+    polarplot(gama(i), 1,'Marker','o','MarkerEdgeColor',colors(color_index,:),'LineWidth',1.5);
+    polarplot(teta(i), 1 ,'Marker','x','MarkerEdgeColor',colors(color_index,:),'LineWidth',1.5);
+
+    hold on,
+end
+   
+
+%title("AOA - angle of arrival $\theta_{elevation}$ et $\theta_{azimuth}$")%%
+
 %%
 figure,
-    %geoplot(0,0) % carte du monde
-    geolimits([43 48],[-2 6]) % limites de la carte
+colors = colormap(lines(12));
+    geoplot(0,0) % carte du monde
+    geolimits([43 47.5],[-2 6]) % limites de la carte
     % Ajout des points sur la carte
     hold on, 
     for a = 1:ns
-        geoscatter([lati(a) coord_Tx(a,1)],[longi(a) coord_Tx(a,2)], 'x','LineWidth',1.5) ;
-        %geoscatter(coord_Tx(a,1),coord_Tx(a,2), 'b.','LineWidth',2.5);
+            color_index = mod(a-1, 12)+1; % Choix de la couleur en fonction de l'indice de la boucle
+
+        geoscatter(lati(a),longi(a), 'x','MarkerEdgeColor',colors(color_index,:),'LineWidth',1.5) ;
+        geoscatter(coord_Tx(a,1),coord_Tx(a,2), '+','MarkerEdgeColor',colors(color_index,:),'LineWidth',2.5);
     end
     geobasemap streets-light  % fond de carte
 %% Figures
